@@ -2,10 +2,9 @@ package me.snizzle.scrabble;
 
 import javafx.stage.Stage;
 import me.snizzle.game.Game;
-import me.snizzle.game.GameLoop;
 
 /**
- * this defines the
+ * this defines the scrabble game. it is created with the game factory
  */
 public class ScrabbleGame extends Game {
 
@@ -14,6 +13,9 @@ public class ScrabbleGame extends Game {
     }
 
 
+    /**
+     * this is the magic for a Scrabble specific game
+     */
     @Override
     public void createGame() {
         gui = new ScrabbleGUI(gameStage);

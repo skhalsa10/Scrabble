@@ -36,7 +36,6 @@ public class GameLauncher extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        System.out.println('z'-'a');
 
         primaryStage.setTitle("CS351 Game Launcher");
         //this will be rows of stuff
