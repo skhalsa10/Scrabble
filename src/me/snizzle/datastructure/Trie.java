@@ -8,10 +8,16 @@ package me.snizzle.datastructure;
  * https://www.hackerearth.com/practice/data-structures/advanced-data-structures/trie-keyword-tree/tutorial/
  * https://medium.com/basecs/trying-to-understand-tries-3ec6bede0014
  * https://www.geeksforgeeks.org/trie-insert-and-search/
+ *
+ * @author Siri Khalsa
+ * @version 1
  */
 public class Trie {
     private TrieNode root;
 
+    /**
+     * Construct a new empty Trie
+     */
     public Trie(){
         root = new TrieNode();
     }
@@ -92,6 +98,7 @@ public class Trie {
      * this inner class defines a Trie node that is used in the Trie datastructure
      */
     class TrieNode {
+        //a child for each letter
         private TrieNode[] children;
         private boolean isWord;
 
