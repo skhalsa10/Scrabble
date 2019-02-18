@@ -12,7 +12,7 @@ import javafx.stage.Stage;
  *
  */
 public abstract class Game {
-    protected GameLogic game;
+    protected GameLogic gameLogic;
     protected GameLoop gameLoop;
     protected Renderable gui;
     protected Stage gameStage;
@@ -21,6 +21,10 @@ public abstract class Game {
         this.gameStage = gameStage;
         this.createGame();
 
+    }
+
+    public void play(){
+        gameLoop.start();
     }
 
     /**
