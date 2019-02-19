@@ -17,6 +17,8 @@ public class ScrabbleGameLoop extends GameLoop {
 
     @Override
     public void handle(long now) {
-
+        gameLogic.export(gui);
+        gui.render();
+        gameLogic.step();
     }
 }
