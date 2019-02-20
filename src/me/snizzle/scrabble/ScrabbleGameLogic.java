@@ -6,15 +6,28 @@ public class ScrabbleGameLogic implements GameLogic {
     //declare some stuff
     private Importer importer;
     //declare objects used to make up the game.
-    private ScrabblePlayer human;
+    private ScrabblePlayer player;
     private ScrabblePlayer comp;
     private ScrabbleBoard board;
     private ScrabbleTileBag tileBag;
     private ScrabbleWords words;
     private ScrabbleRules rules;
 
+    //other objects needed for the logic
+    private boolean isGameOver;
+    private boolean isPlayerTurn;
+
     public ScrabbleGameLogic(Importer importer){
         this.importer = importer;
+        this.board = new ScrabbleBoard();
+        this.tileBag = new ScrabbleTileBag();
+        this.words = new ScrabbleWords("enable.txt");
+        this.rules = new ScrabbleRules();
+        this.player = new ScrabbleHumanPlayer(board,tileBag);
+        this.comp = new ScrabbleCompPlayer(board,tileBag);
+
+        this.isGameOver = false;
+        this.isPlayerTurn = true;
     }
 
 
@@ -25,6 +38,13 @@ public class ScrabbleGameLogic implements GameLogic {
 
     @Override
     public void step() {
+        if(isPlayerTurn){
+            //we need to fetch data  for the user turn
+            if(importer.timeToFetchData()){
+                //TODO we will fetch data representing the desired move
+                //TODO I might want to make the
+            }
+        }
 
     }
 }

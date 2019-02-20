@@ -9,6 +9,7 @@ public abstract class ScrabblePlayer {
     protected ScrabbleTileBag tileBag;
     protected ScrabbleBoard board;
 
+
     public ScrabblePlayer(ScrabbleBoard board, ScrabbleTileBag tileBag){
         this.board = board;
         this.tileBag = tileBag;
@@ -21,5 +22,7 @@ public abstract class ScrabblePlayer {
 
     }
 
+    //TODO i might want to add a parameter here that takes some parameter representing the human player
+    //TODO move imported from the GUI
     public abstract void takeTurn();
 }

@@ -6,14 +6,10 @@ import me.snizzle.datastructure.Trie;
 public class ComputerPlayerTest {
 
     public static void main(String args[]){
-        Trie testTrie = new Trie();
+        ScrabbleTile test1 = new ScrabbleTile('f',10);
+        ScrabbleTile test1clone = test1.clone();
 
-        testTrie.insert("peace");
-        testTrie.insert("peacers");
-        testTrie.insert("elbow");
-        testTrie.insert("no");
-        testTrie.insert("nachos");
-
-        System.out.println(testTrie.contains("apple"));
+        System.out.println(test1 + " " + test1.readTile() + " " + test1.getPoints());
+        System.out.println(test1clone + " " + test1clone.readTile() + " " + test1clone.getPoints());
     }
 }
