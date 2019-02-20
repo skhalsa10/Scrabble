@@ -11,5 +11,7 @@ public class ComputerPlayerTest {
 
         System.out.println(test1 + " " + test1.readTile() + " " + test1.getPoints());
         System.out.println(test1clone + " " + test1clone.readTile() + " " + test1clone.getPoints());
+
+        System.out.println(' '-'a');
     }
 }
