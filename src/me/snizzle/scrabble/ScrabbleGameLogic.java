@@ -3,7 +3,7 @@ package me.snizzle.scrabble;
 import me.snizzle.game.GameLogic;
 
 public class ScrabbleGameLogic implements GameLogic {
-    //declare some stuff
+    //declare importer
     private Importer importer;
     //declare objects used to make up the game.
     private ScrabblePlayer player;
@@ -14,7 +14,7 @@ public class ScrabbleGameLogic implements GameLogic {
     private ScrabbleRules rules;
     private ScrabbleExportState exportS;
 
-    //other objects needed for the logic
+    //other boolean logic needed
     private boolean isGameOver;
     private boolean isPlayerTurn;
 
@@ -25,8 +25,8 @@ public class ScrabbleGameLogic implements GameLogic {
         this.tileBag = new ScrabbleTileBag();
         this.words = new ScrabbleWords("enable.txt");
         this.rules = new ScrabbleRules();
-        this.player = new ScrabbleHumanPlayer(board,tileBag);
-        this.comp = new ScrabbleCompPlayer(board,tileBag);
+        this.player = new ScrabbleHumanPlayer(board,tileBag, rules);
+        this.comp = new ScrabbleCompPlayer(board,tileBag, rules);
 
         this.isGameOver = false;
         this.isPlayerTurn = true;
@@ -47,6 +47,10 @@ public class ScrabbleGameLogic implements GameLogic {
                 ScrabbleImportState userMove = (ScrabbleImportState)importer.fetch();
                 player.cacheMove( userMove.getMove());
             }
+        }
+        //time to let the computer take a turn
+        else{
+            comp.takeTurn();
         }
 
     }

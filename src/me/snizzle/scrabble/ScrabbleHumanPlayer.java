@@ -2,8 +2,8 @@ package me.snizzle.scrabble;
 
 public class ScrabbleHumanPlayer extends ScrabblePlayer{
 
-    public ScrabbleHumanPlayer(ScrabbleBoard board, ScrabbleTileBag tileBag) {
-        super(board, tileBag);
+    public ScrabbleHumanPlayer(ScrabbleBoard board, ScrabbleTileBag tileBag, ScrabbleRules rules) {
+        super(board, tileBag, rules);
 
     }
 

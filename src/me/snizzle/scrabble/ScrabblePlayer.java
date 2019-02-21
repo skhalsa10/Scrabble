@@ -44,8 +44,6 @@ public abstract class ScrabblePlayer {
      * @return
      */
     public boolean checkCachedMoveValid(){
-        //TODO check if move is valid on board
-        //TODO check to see if hand contains tiles
         if(!tileTray.contains(new ArrayList<>(currentMove.values()))){
             return false;
         }
@@ -57,12 +55,20 @@ public abstract class ScrabblePlayer {
     }
 
     /**
-     * this will assume the move is valid remove the tiles and play them on the board.
+     * this will assume the move is valid remove the tiles from the tray
+     * and plays them on the board. It will also delete the reset currentMove to null.
      * @return true on success
      */
     public boolean approveMove(){
-        if(tileTray.remove(new ArrayList<>(currentMove.values())))
-        return board.placeTiles(currentMove);
+        if(!tileTray.remove(new ArrayList<>(currentMove.values()))){
+            return false;
+        }
+        if(!board.placeTiles(currentMove)){
+            return false;
+        }
+
+        currentMove = null;
+        return true;
 
     }
 }
