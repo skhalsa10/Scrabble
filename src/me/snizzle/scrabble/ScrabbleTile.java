@@ -48,5 +48,44 @@ public class ScrabbleTile implements Cloneable{
         return c;
     }
 
-    //TODO may need to override equals and hash
+
+    /**
+     * this is a better definition of equal for this object
+     * @param o object to compare to.
+     * @return true if equal
+     */
+    @Override
+    public boolean equals(Object o) {
+        //null check
+        if(o == null) {
+            return false;
+        }
+
+        //reference check
+        if (o == this) {
+            return true;
+        }
+
+        //instance check
+        if(!(o instanceof ScrabbleTile)){
+            return false;
+        }
+
+        ScrabbleTile tile = (ScrabbleTile)o;
+
+        //valueCheck
+        return (this.letter == tile.readTile() && this.points == tile.getPoints());
+    }
+
+    /**
+     * hopefully this hashcode is good enough.
+     * @return my hashcode
+     */
+    @Override
+    public int hashCode() {
+        int prime = 31;
+        int result = 1;
+
+        return prime*(result+letter+points);
+    }
 }
