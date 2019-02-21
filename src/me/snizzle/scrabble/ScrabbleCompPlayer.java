@@ -11,7 +11,8 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
     }
 
     @Override
-    public void takeTurn() {
+    public boolean takeTurn() {
         //TODO need to right algorithm for taking a turn.
+        return false;
     }
 }

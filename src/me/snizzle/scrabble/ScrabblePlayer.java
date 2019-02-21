@@ -13,15 +13,31 @@ public abstract class ScrabblePlayer {
     protected ScrabbleBoard board;
     protected ScrabbleRules rules;
 
+    //this is used as a cached move that is being held for testing.
     protected HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove;
 
 
+    /**
+     * this creates a default player with a default tray.
+     * @param board
+     * @param tileBag
+     * @param rules
+     */
     public ScrabblePlayer(ScrabbleBoard board, ScrabbleTileBag tileBag, ScrabbleRules rules){
         this.rules = rules;
         this.board = board;
         this.tileBag = tileBag;
         this.tileTray = new ScrabbleTileTray(tileBag);
     }
+
+    /**
+     * should only be used for testing the computer player for assignment. it is pointless otherwise.
+     * it needs to be able to parse a file to set up the state.
+     * @param board
+     * @param tileBag
+     * @param trayFileName
+     * @param rules
+     */
     public ScrabblePlayer(ScrabbleBoard board, ScrabbleTileBag tileBag, String trayFileName, ScrabbleRules rules){
         this.rules = rules;
         this.board = board;
@@ -32,7 +48,7 @@ public abstract class ScrabblePlayer {
 
     //TODO i might want to add a parameter here that takes some parameter representing the human player
     //TODO move imported from the GUI
-    public abstract void takeTurn();
+    public abstract boolean takeTurn();
 
     public void cacheMove(HashMap<ScrabbleBoardPoint, ScrabbleTile> move) {
         this.currentMove = move;
@@ -60,6 +76,7 @@ public abstract class ScrabblePlayer {
      * @return true on success
      */
     public boolean approveMove(){
+        //TODO should I checkCachedMovevalid here?
         if(!tileTray.remove(new ArrayList<>(currentMove.values()))){
             return false;
         }

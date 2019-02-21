@@ -7,8 +7,22 @@ public class ScrabbleHumanPlayer extends ScrabblePlayer{
 
     }
 
+    /**
+     * this method needs a cached move to work and assumes it is cached
+     * @return true if cached move is valid the move is played successfully.
+     * will return false otherwise or if currentMove is null
+     */
     @Override
-    public void takeTurn() {
-
+    public boolean takeTurn() {
+        if(currentMove == null){return false;}
+        //assumes the move is cached to play.
+        if(!checkCachedMoveValid()){
+            return false;
+        }
+        if(!approveMove()){
+            return false;
+        }
+        tileTray.fillTray();
+        return true;
     }
 }

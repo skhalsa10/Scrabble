@@ -18,19 +18,21 @@ public class ScrabbleBoard {
     private int[][] boardValues;
     private ScrabbleTile[][] boardTiles;
     private int boardSize;
+    private ScrabbleRules rules;
 
     /**
      * constructs the default board
      */
-    public ScrabbleBoard(){
-        this("scrabble_board.txt");
+    public ScrabbleBoard(ScrabbleRules rules){
+        this("scrabble_board.txt", rules);
     }
 
     /**
      * this will construct a board based on the configs in the file
      * @param boardConfig
      */
-    public ScrabbleBoard(String boardConfig){
+    public ScrabbleBoard(String boardConfig, ScrabbleRules rules){
+        this.rules = rules;
         BufferedReader fileReader = null;
         try {
             fileReader = new BufferedReader(new FileReader(boardConfig));
@@ -144,6 +146,7 @@ public class ScrabbleBoard {
      * @return true if valid else false
      */
     public boolean validMove(HashMap<ScrabbleBoardPoint, ScrabbleTile> moves, ScrabbleRules rules){
+        //TODO need to first check if any tiles are mapped to a board point that already has a tile
         //TODO
         return false;
     }

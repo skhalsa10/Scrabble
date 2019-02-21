@@ -2,6 +2,12 @@ package me.snizzle.scrabble;
 
 import me.snizzle.game.GameLogic;
 
+/**
+ * this is the main logic of the game it keeps track of the board
+ * the players the rules and tilebag and lets them play togethor
+ * @author Siri Khalsa
+ * @version 1
+ */
 public class ScrabbleGameLogic implements GameLogic {
     //declare importer
     private Importer importer;
@@ -21,10 +27,11 @@ public class ScrabbleGameLogic implements GameLogic {
     public ScrabbleGameLogic(Importer importer){
         this.importer = importer;
         this.exportS = new ScrabbleExportState();
-        this.board = new ScrabbleBoard();
         this.tileBag = new ScrabbleTileBag();
+        //TODO should I really have the words here? probably needs to be tucked into the rules
         this.words = new ScrabbleWords("enable.txt");
         this.rules = new ScrabbleRules();
+        this.board = new ScrabbleBoard(rules);
         this.player = new ScrabbleHumanPlayer(board,tileBag, rules);
         this.comp = new ScrabbleCompPlayer(board,tileBag, rules);
 
@@ -39,18 +46,32 @@ public class ScrabbleGameLogic implements GameLogic {
         exporter.exportState(exportS);
     }
 
+    /**
+     * this method will sted through the logic. it does that with one of three ways. it will process the user
+     * move if ready. if not the entire step is ignored and will be processed again later. this could happen a million times
+     * while it waits for the user to finish the move.
+     *
+     * the other thing it will do is process the computers turn.
+     */
     @Override
     public void step() {
-        if(isPlayerTurn){
-            //we need to fetch data  for the user turn
+        if(isPlayerTurn ){
+            //we need to fetch data  for the user turn if ready. if not skip step and come back.
             if(importer.timeToFetchData()){
                 ScrabbleImportState userMove = (ScrabbleImportState)importer.fetch();
                 player.cacheMove( userMove.getMove());
+                if(player.takeTurn()){
+                    isPlayerTurn = false;
+                }else{
+                    //this will force the user to try again.
+                    exportS.setUserMoveFailed();
+                }
             }
         }
-        //time to let the computer take a turn
-        else{
+        //process the computer if it is not the users turn
+        if(!isPlayerTurn){
             comp.takeTurn();
+            isPlayerTurn = true;
         }
 
     }
