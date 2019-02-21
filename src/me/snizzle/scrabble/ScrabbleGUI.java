@@ -1,6 +1,8 @@
 package me.snizzle.scrabble;
 
 import javafx.stage.Stage;
+import me.snizzle.game.LogicExportState;
+import me.snizzle.game.LogicImportState;
 import me.snizzle.game.Renderable;
 
 /**
@@ -13,6 +15,7 @@ import me.snizzle.game.Renderable;
 public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogic.Exporter, Renderable{
     //declare needed objects. as is true with all GUI stuff this will fill up with code
     private Stage gameStage;
+    private boolean userMovedFailed;
 
     /**
      * this constructs a new GUI
@@ -24,7 +27,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
 
     //@Override
     public void render() {
-
+        //TODO
     }
 
     /**
@@ -35,6 +38,25 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
      */
     @Override
     public boolean timeToFetchData() {
+        //TODO
         return false;
+    }
+
+    @Override
+    public LogicImportState fetch() {
+        //TODO
+
+        return null;
+    }
+
+    /**
+     * this function will import the current logic state using the logicstateexporter
+     * @param exportState state from the logic.
+     */
+    @Override
+    public void exportState(LogicExportState exportState) {
+        ScrabbleExportState es = (ScrabbleExportState) exportState;
+        userMovedFailed = es.isUserMoveFailed();
+
     }
 }

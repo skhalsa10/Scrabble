@@ -23,4 +23,8 @@ public class ScrabbleExportState implements LogicExportState {
     public void setUserMoveFailed() {
         userMoveFailed = true;
     }
+
+    public boolean isUserMoveFailed() {
+        return userMoveFailed;
+    }
 }

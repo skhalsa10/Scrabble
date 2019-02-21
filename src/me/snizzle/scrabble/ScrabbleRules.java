@@ -1,5 +1,7 @@
 package me.snizzle.scrabble;
 
+import me.snizzle.datastructure.Trie;
+
 import java.util.HashMap;
 
 /**
@@ -47,9 +49,15 @@ public class ScrabbleRules {
     private HashMap<Character,Integer> charPoints;
     private HashMap<Character,Integer> charCount;
     private boolean isFirstMove;
+    private ScrabbleWords dictionary;
 
     public ScrabbleRules(){
+        this("twl06.txt");
+    }
+
+    public ScrabbleRules(String fileName){
         initCharMaps();
+        dictionary = new ScrabbleWords(fileName);
         isFirstMove = true;
     }
 

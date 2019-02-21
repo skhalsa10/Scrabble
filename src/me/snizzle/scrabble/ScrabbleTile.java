@@ -37,14 +37,10 @@ public class ScrabbleTile implements Cloneable{
         return points;
     }
 
+
     @Override
     protected ScrabbleTile clone(){
-        ScrabbleTile c = null;
-        try {
-            c = (ScrabbleTile)super.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
+        ScrabbleTile c = new ScrabbleTile(this.readTile(),this.getPoints());
         return c;
     }
 
@@ -88,4 +84,6 @@ public class ScrabbleTile implements Cloneable{
 
         return prime*(result+letter+points);
     }
+
+
 }
