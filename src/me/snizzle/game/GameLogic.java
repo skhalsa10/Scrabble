@@ -6,10 +6,11 @@ public interface GameLogic {
 
     interface Importer {
         boolean timeToFetchData();
+        LogicImportState fetch();
     }
 
     interface Exporter {
-
+        void exportState(LogicExportState exportState);
     }
 
     void step();

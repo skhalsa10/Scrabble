@@ -33,7 +33,7 @@ public class ScrabbleGameLogic implements GameLogic {
 
 
     public void export(Exporter exporter){
-
+        exporter.exportState(board.export());
     }
 
     @Override

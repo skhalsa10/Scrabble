@@ -147,4 +147,7 @@ public class ScrabbleBoard {
         //TODO
         return false;
     }
+
+    public void export() {
+    }
 }
