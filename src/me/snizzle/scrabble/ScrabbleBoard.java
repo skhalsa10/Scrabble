@@ -147,10 +147,14 @@ public class ScrabbleBoard {
      */
     public boolean validMove(HashMap<ScrabbleBoardPoint, ScrabbleTile> moves, ScrabbleRules rules){
         //TODO need to first check if any tiles are mapped to a board point that already has a tile
-        //TODO
+        //TODO should I move this out of the board?
         return false;
     }
 
     public void export() {
+    }
+
+    public int getBoardSize() {
+        return boardSize;
     }
 }

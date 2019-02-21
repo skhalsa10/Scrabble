@@ -27,4 +27,7 @@ public class ScrabbleExportState implements LogicExportState {
     public boolean isUserMoveFailed() {
         return userMoveFailed;
     }
+
+    public ScrabbleTile[] viewUserTray() {
+    }
 }
