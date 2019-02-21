@@ -9,6 +9,9 @@ import java.io.*;
  *
  * this essentially wraps the Trie data structure (or can wrap another type if available)
  * and loading it with words.
+ *
+ * @author Siri Khalsa
+ * @version 1
  */
 public class ScrabbleWords {
     private Trie words;
@@ -20,6 +23,7 @@ public class ScrabbleWords {
      * @param fileName file of words seperated by new lines.
      */
     public ScrabbleWords(String fileName) {
+        words = new Trie();
         loadWords(fileName);
     }
 

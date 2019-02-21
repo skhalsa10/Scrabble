@@ -47,4 +47,6 @@ public class ScrabbleTile implements Cloneable{
         }
         return c;
     }
+
+    //TODO may need to override equals and hash
 }

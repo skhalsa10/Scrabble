@@ -46,9 +46,11 @@ public class ScrabbleRules {
 
     private HashMap<Character,Integer> charPoints;
     private HashMap<Character,Integer> charCount;
+    private boolean isFirstMove;
 
     public ScrabbleRules(){
         initCharMaps();
+        isFirstMove = true;
     }
 
     /**

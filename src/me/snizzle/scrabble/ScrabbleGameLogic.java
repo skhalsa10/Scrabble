@@ -12,6 +12,7 @@ public class ScrabbleGameLogic implements GameLogic {
     private ScrabbleTileBag tileBag;
     private ScrabbleWords words;
     private ScrabbleRules rules;
+    private ScrabbleExportState exportS;
 
     //other objects needed for the logic
     private boolean isGameOver;
@@ -19,6 +20,7 @@ public class ScrabbleGameLogic implements GameLogic {
 
     public ScrabbleGameLogic(Importer importer){
         this.importer = importer;
+        this.exportS = new ScrabbleExportState();
         this.board = new ScrabbleBoard();
         this.tileBag = new ScrabbleTileBag();
         this.words = new ScrabbleWords("enable.txt");
@@ -33,7 +35,8 @@ public class ScrabbleGameLogic implements GameLogic {
 
 
     public void export(Exporter exporter){
-        exporter.exportState(board.export());
+        //TODO
+        exporter.exportState(exportS);
     }
 
     @Override
@@ -41,8 +44,8 @@ public class ScrabbleGameLogic implements GameLogic {
         if(isPlayerTurn){
             //we need to fetch data  for the user turn
             if(importer.timeToFetchData()){
-                //TODO we will fetch data representing the desired move
-                //TODO I might want to make the
+                ScrabbleImportState userMove = (ScrabbleImportState)importer.fetch();
+                player.cacheMove( userMove.getMove());
             }
         }
 
