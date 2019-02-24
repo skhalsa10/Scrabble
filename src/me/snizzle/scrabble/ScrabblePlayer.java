@@ -89,6 +89,10 @@ public abstract class ScrabblePlayer {
 
     }
 
+    /**
+     *
+     * @return the tray of this player as a ScrabbleTile[]
+     */
     public ScrabbleTile[] tileTrayToArray(){
         return tileTray.toArray();
     }

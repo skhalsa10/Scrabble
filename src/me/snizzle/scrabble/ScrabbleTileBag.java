@@ -134,4 +134,12 @@ public class ScrabbleTileBag {
     public boolean isEmpty(){
         return tileBag.isEmpty();
     }
+
+    /**
+     * returns the amount of tiles left in the bag
+     * @return the amount of tiles left in the bag as an int
+     */
+    public int size(){
+        return tileBag.size();
+    }
 }

@@ -43,7 +43,7 @@ public class ScrabbleGameLogic implements GameLogic {
 
     public void export(Exporter exporter){
         //I will update the exportS with the current tray and the new tiles played since last render
-        exportS.exportUserTray(player.);
+        exportS.exportUserTray(player.tileTrayToArray());
 
         exporter.exportState(exportS);
     }

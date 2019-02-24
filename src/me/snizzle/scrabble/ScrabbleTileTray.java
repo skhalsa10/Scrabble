@@ -114,7 +114,7 @@ public class ScrabbleTileTray {
      * @return the tray as a ScrabbleTile[]
      */
     public ScrabbleTile[] toArray() {
-        ScrabbleTile[] temp = null;
-        return tray.toArray(temp);
+
+        return tray.toArray(new ScrabbleTile[]{});
     }
 }
