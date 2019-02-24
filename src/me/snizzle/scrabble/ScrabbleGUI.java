@@ -40,6 +40,8 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     private boolean userMovedFailed;
     private ScrabbleBoard board;
     private ScrabbleTile[] userTray;
+    private boolean importerReady;
+    private boolean newTurn;
 
 
     /**
@@ -52,6 +54,8 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         board = new ScrabbleBoard(new ScrabbleRules());
         //this will be initialized like this for now just to get GUI rendering
         userTray = new ScrabbleTile[7];
+        importerReady = false;
+        newTurn = true;
 
         //set up jfx stuff
         this.gameStage = gameStage;
@@ -91,6 +95,9 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
 
     }
 
+    /**
+     * set up the tray for the first time
+     */
     private void initTray() {
         trayGridPane.setMinHeight(TILESIZE);
         trayGridPane.setMinWidth(TILESIZE*userTray.length);
@@ -105,7 +112,9 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
                 @Override
                 public void handle(MouseEvent event) {
                     System.out.println("Tray index " + trayGridPane.getColumnIndex((Node)event.getSource()));
-                    ((Text)((StackPane)event.getSource()).getChildren().get(((StackPane)event.getSource()).getChildren().size()-2)).setId("tile-letter-text-selected");
+                    System.out.println("stackPane children count is "+ ((StackPane)event.getSource()).getChildren().size());
+                    ((Text)((StackPane)event.getSource()).getChildren().get(1)).setId("tile-letter-text-selected");
+                    //((Text)((StackPane)event.getSource()).getChildren().get(((StackPane)event.getSource()).getChildren().size()-2)).setId("tile-letter-text-selected");
                 }
             });
             stackPane.getChildren().add(rect);
@@ -186,6 +195,10 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         return stackPane;
     }
 
+    /**
+     * returns the minimum width needed to display all objects
+     * @return the minimum width needed to display all objects
+     */
     private double calculateMinWidth() {
         return boardGridPane.getMinWidth();
     }
@@ -203,8 +216,11 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
      */
     //@Override
     public void render() {
-        renderBoardState();
-        renderTrayState();
+        if(newTurn) {
+            renderBoardState();
+            renderTrayState();
+            newTurn = false;
+        }
     }
 
     /**
@@ -274,6 +290,10 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         return true;
     }
 
+    /**
+     * this will return a rectangle base to set behind the tile text
+     * @return rectangle base of tile
+     */
     private Rectangle renderTileBase(){
 
         Rectangle rect = new Rectangle(0,0,TILESIZE,TILESIZE);
@@ -282,6 +302,11 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
 
     }
 
+    /**
+     * this will return the Text of the letter
+     * @param letter to add to Text object
+     * @return Text containing only the letter
+     */
     private Text renderTileLetter(char letter){
 
         Text tileText = new Text(Character.toString(letter).toUpperCase());
@@ -291,13 +316,18 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         return tileText;
     }
 
+    /**
+     * this will return a Text object containing the points as the text
+     * @param points to represent as a Text object
+     * @return Text object representing the points.
+     */
     private Text renderTilePoints(int points){
         Text tilepoints = new Text(Integer.toString(points));
         tilepoints.setId("tile-points-text");
         return tilepoints;
     }
-    //I should try to to this on a grid pane rather than drawing to canvas. I CAN USE A STACK
-    //pane inside the gridpane and make it look better with text and rectangles and stuff
+
+
     private void renderBoardState() {
 
         //TODO all this will do is add any new tiles to the board
@@ -312,12 +342,14 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     @Override
     public boolean timeToFetchData() {
         //TODO
-        return false;
+        return importerReady;
     }
 
     @Override
     public LogicImportState fetch() {
         //TODO
+        importerReady = false;
+        newTurn = true;
         return null;
     }
 

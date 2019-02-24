@@ -37,7 +37,7 @@
     -fx-border-width: 3 0 0 0;
     -fx-border-insets: -6 0 0 0;
     -fx-padding: 2;
-    -fx-border-color: #0c586b;
+    -fx-border-color: black;
 }
 
 #tile-letter-text {
