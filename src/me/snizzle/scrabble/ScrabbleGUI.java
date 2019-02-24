@@ -207,25 +207,64 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         renderTrayState();
     }
 
+    /**
+     * this will render the tray state
+     */
     private void renderTrayState() {
         if(userTray != null && userTray.length ==7){
             for (int i = 0; i <userTray.length ; i++) {
-                renderTileText((StackPane) trayGridPane.getChildren().get(i), userTray[i]);
+                renderTileText((StackPane) trayGridPane.getChildren().get(i), userTray[i], false);
             }
         }
     }
 
-    private boolean renderTileText(StackPane stackPane, ScrabbleTile tile) {
-        Object o = stackPane.getChildren().get(stackPane.getChildren().size()-1);
-        if (!(o instanceof Rectangle)){
+    /**
+     * this will render the tile depending on where it is  this can get complicated
+     * @param stackPane the pane that will hold the new tile render. dpending on the pane passed in it can have a set of
+     *                  current legal states to work with
+     * @param tile the tile to be rendered
+     * @param isBoardTile will change how it approaches the render of the tile.
+     * @return true if successful or false otherwise.
+     */
+    private boolean renderTileText(StackPane stackPane, ScrabbleTile tile, boolean isBoardTile) {
+        //lets take of the board tile case
+        if(isBoardTile){
+            //first will check the size of stackpane's children it can only be 3 Stackpane->Rectangle->Text
+            if(stackPane.getChildren().size() != 2 ){
+                return false;
+            }
+            //TODO I think the size is all I need to test because nothing else will be three.
+            //render the tile base
+            stackPane.getChildren().add(renderTileBase());
+            //now in a state to add text
+
+        }
+        //now do the rare case of blank tile trays which we get first time after initialization
+        else if(!isBoardTile && stackPane.getChildren().size() ==1) {
+            Object o = stackPane.getChildren().get(stackPane.getChildren().size() - 1);
+            if (!(o instanceof Rectangle)) {
+                return false;
+            }
+
+            Rectangle r = (Rectangle) o;
+            //this will tell if it is a tile rectangle base on the color
+            if (!r.getFill().equals(Color.web("#2B2B2B"))) {
+                return false;
+            }
+
+            //already in a state to add and allign text.
+        }
+        else if(!isBoardTile && stackPane.getChildren().size() ==3){
+            //this is the case of a tile in the tray already rendered with text we delete the the text and add the new text
+            stackPane.getChildren().remove(stackPane.getChildren().size() -1);
+            stackPane.getChildren().remove(stackPane.getChildren().size() -1);
+            //now ready for more text
+        }
+        else{
             return false;
         }
 
-        Rectangle r = (Rectangle) o;
-        //this will tell if it is a tile rectangle base on the color
-        if(!r.getFill().equals(Color.web("#2B2B2B"))){
-            return false;
-        }
+        //add and allign letter and points text
         Text letter = renderTileLetter(tile.readTile());
         Text points = renderTilePoints(tile.getPoints());
         stackPane.getChildren().add(letter);
@@ -279,7 +318,6 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     @Override
     public LogicImportState fetch() {
         //TODO
-
         return null;
     }
 
@@ -291,7 +329,6 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     public void exportState(LogicExportState exportState) {
         ScrabbleExportState es = (ScrabbleExportState) exportState;
         userMovedFailed = es.isUserMoveFailed();
-        //userTray = es.viewUserTray();
         userTray = es.viewUserTray();
 
     }
