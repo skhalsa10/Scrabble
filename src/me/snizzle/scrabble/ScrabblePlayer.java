@@ -88,4 +88,8 @@ public abstract class ScrabblePlayer {
         return true;
 
     }
+
+    public ScrabbleTile[] tileTrayToArray(){
+        return tileTray.toArray();
+    }
 }

@@ -1,7 +1,5 @@
 package me.snizzle.scrabble;
 
-import me.snizzle.datastructure.Trie;
-
 import java.util.HashMap;
 
 /**
@@ -52,7 +50,7 @@ public class ScrabbleRules {
     private ScrabbleWords dictionary;
 
     public ScrabbleRules(){
-        this("twl06.txt");
+        this("resources/twl06.txt");
     }
 
     public ScrabbleRules(String fileName){

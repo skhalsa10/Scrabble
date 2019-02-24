@@ -108,4 +108,13 @@ public class ScrabbleTileTray {
         fillTray();
         return true;
     }
+
+    /**
+     *
+     * @return the tray as a ScrabbleTile[]
+     */
+    public ScrabbleTile[] toArray() {
+        ScrabbleTile[] temp = null;
+        return tray.toArray(temp);
+    }
 }

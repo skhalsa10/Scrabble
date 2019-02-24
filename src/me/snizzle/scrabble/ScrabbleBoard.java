@@ -24,7 +24,7 @@ public class ScrabbleBoard {
      * constructs the default board
      */
     public ScrabbleBoard(ScrabbleRules rules){
-        this("scrabble_board.txt", rules);
+        this("resources/scrabble_board.txt", rules);
     }
 
     /**
@@ -78,12 +78,12 @@ public class ScrabbleBoard {
                 if(parsed.length != boardSize){throw new IOException();}
 
                 for(c = 0; c< parsed.length;c++){
-                   char first  = parsed[c].charAt(0);
-                   char second = parsed[c].charAt(1);
-                   if(first != '.'){
-                       boardValues[r][c] = Integer.parseInt(String.valueOf(first));
-                   }else if (second != '.'){
-                       boardValues[r][c] = Integer.parseInt(String.valueOf(second));
+                   char word  = parsed[c].charAt(0);
+                   char letter = parsed[c].charAt(1);
+                   if(word != '.'){
+                       boardValues[r][c] = Integer.parseInt(String.valueOf(word))+'w';
+                   }else if (letter != '.'){
+                       boardValues[r][c] = Integer.parseInt(String.valueOf(letter));
                    }else{
                        boardValues[r][c] = 0;
                    }
@@ -156,5 +156,9 @@ public class ScrabbleBoard {
 
     public int getBoardSize() {
         return boardSize;
+    }
+
+    public int getBoardValueAt(int r, int c){
+        return boardValues[r][c];
     }
 }

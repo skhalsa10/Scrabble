@@ -29,7 +29,7 @@ public class ScrabbleGameLogic implements GameLogic {
         this.exportS = new ScrabbleExportState();
         this.tileBag = new ScrabbleTileBag();
         //TODO should I really have the words here? probably needs to be tucked into the rules
-        this.words = new ScrabbleWords("enable.txt");
+        this.words = new ScrabbleWords("resources/enable.txt");
         this.rules = new ScrabbleRules();
         this.board = new ScrabbleBoard(rules);
         this.player = new ScrabbleHumanPlayer(board,tileBag, rules);
@@ -42,7 +42,9 @@ public class ScrabbleGameLogic implements GameLogic {
 
 
     public void export(Exporter exporter){
-        //TODO
+        //I will update the exportS with the current tray and the new tiles played since last render
+        exportS.exportUserTray(player.);
+
         exporter.exportState(exportS);
     }
 
@@ -64,7 +66,7 @@ public class ScrabbleGameLogic implements GameLogic {
                     isPlayerTurn = false;
                 }else{
                     //this will force the user to try again.
-                    exportS.setUserMoveFailed();
+                    exportS.setUserMoveFailed(true);
                 }
             }
         }

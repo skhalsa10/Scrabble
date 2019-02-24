@@ -1,0 +1,63 @@
+.root{
+    -fx-padding: 10;
+    -fx-border-style: solid inside;
+    -fx-border-width: 3;
+    -fx-border-insets: 5;
+    -fx-border-radius: 7;
+    -fx-border-color: #0c586b;
+    -fx-background-radius: 7;
+    -fx-background-insets: 5;
+    -fx-background: #0c586b;
+}
+
+#text{
+    -fx-font-size : 20px;
+    -fx-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-family: "Bitstream Charter";
+}
+
+#tray {
+    -fx-padding: 1;
+    -fx-border-style: solid inside;
+    -fx-border-width: 2;
+    -fx-border-radius: 1;
+    -fx-border-color: black;
+    -fx-background-color: darkGray;
+}
+
+#title {
+    -fx-font-size : 50px;
+    -fx-text-fill: lime ;
+    -fx-font-family: "MathJax_Caligraphic";
+}
+
+#board-pane {
+    -fx-border-style: solid inside;
+    -fx-border-width: 3 0 0 0;
+    -fx-border-insets: -6 0 0 0;
+    -fx-padding: 2;
+    -fx-border-color: #0c586b;
+}
+
+#tile-letter-text {
+    -fx-font-size : 30px;
+    -fx-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-family: "Bitstream Charter";
+}
+
+#tile-letter-text-selected {
+    -fx-font-size : 30px;
+    -fx-fill: gold;
+    -fx-font-weight: bold;
+    -fx-font-family: "Bitstream Charter";
+}
+
+#tile-points-text {
+    -fx-padding: 0 5 0 0;
+    -fx-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-family: "Bitstream Charter";
+
+}
