@@ -111,6 +111,9 @@ public class ScrabbleBoard {
      * @return true if it successfully added the tile (can only add a tile to an empty spot)
      */
     public boolean placeTiles(HashMap<ScrabbleBoardPoint, ScrabbleTile> moves){
+        if(moves == null){
+            return true;
+        }
 
         for (ScrabbleBoardPoint p: moves.keySet()) {
             if(boardTiles[p.getRow()][p.getCol()] != null){
@@ -160,5 +163,25 @@ public class ScrabbleBoard {
 
     public int getBoardValueAt(int r, int c){
         return boardValues[r][c];
+    }
+
+    public ScrabbleTile readTileAt(int r, int c){
+        return boardTiles[r][c];
+    }
+
+    /**
+     * this will return a list of all points on the tileboard that contain a tile.
+     * @return an array list containing scrabbleBoardPOints representing played Tiles
+     */
+    public ArrayList<ScrabbleBoardPoint> getListPlayedTiles() {
+        ArrayList<ScrabbleBoardPoint> temp = new ArrayList<>();
+        for(int r = 0;r<boardSize;r++){
+            for(int c = 0; c< boardSize;c++){
+                if(boardTiles[r][c] != null){
+                    temp.add(new ScrabbleBoardPoint(r,c));
+                }
+            }
+        }
+        return temp;
     }
 }

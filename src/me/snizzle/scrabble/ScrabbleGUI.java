@@ -2,6 +2,7 @@ package me.snizzle.scrabble;
 
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -15,6 +16,7 @@ import me.snizzle.game.LogicExportState;
 import me.snizzle.game.LogicImportState;
 import me.snizzle.game.Renderable;
 
+import java.util.HashMap;
 
 
 /**
@@ -29,7 +31,9 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     private final int TILESIZE = 50;
     private Stage gameStage;
     private GridPane boardGridPane;
+    private StackPane[][] boardGridStackPaneRef;
     private GridPane trayGridPane;
+    private StackPane[] trayGridStackRef;
     private Scene scene;
     private VBox root;
     private Label title;
@@ -42,6 +46,8 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     private ScrabbleTile[] userTray;
     private boolean importerReady;
     private boolean newTurn;
+    private HashMap<ScrabbleBoardPoint,ScrabbleTile> cachedMove;
+    private ScrabbleTile cachedSelection;
 
 
     /**
@@ -54,6 +60,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         board = new ScrabbleBoard(new ScrabbleRules());
         //this will be initialized like this for now just to get GUI rendering
         userTray = new ScrabbleTile[7];
+        cachedMove = new HashMap<>();
         importerReady = false;
         newTurn = true;
 
@@ -62,6 +69,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
 
         //create the boardGridPane
         boardGridPane = new GridPane();
+        boardGridStackPaneRef = new StackPane[board.getBoardSize()][board.getBoardSize()];
         initBoardGridPane();
 
         //create the title
@@ -72,6 +80,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
 
         //create usertraypane convas and graphics context
         trayGridPane = new GridPane();
+        trayGridStackRef = new StackPane[7];
         initTray();
 
 
@@ -111,15 +120,28 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
             stackPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
-                    System.out.println("Tray index " + trayGridPane.getColumnIndex((Node)event.getSource()));
-                    System.out.println("stackPane children count is "+ ((StackPane)event.getSource()).getChildren().size());
-                    ((Text)((StackPane)event.getSource()).getChildren().get(1)).setId("tile-letter-text-selected");
-                    //((Text)((StackPane)event.getSource()).getChildren().get(((StackPane)event.getSource()).getChildren().size()-2)).setId("tile-letter-text-selected");
+                    selectTile(trayGridPane.getColumnIndex((Node)event.getSource()));
+
                 }
             });
             stackPane.getChildren().add(rect);
             trayGridPane.add(stackPane,i,0);
+            trayGridStackRef[i] = stackPane;
         }
+
+    }
+
+    private void selectTile(int index) {
+        System.out.println(userTray[index]);
+
+        trayGridStackRef[index].getChildren().get(trayGridStackRef[index].getChildren().size()-2).setId("tile-letter-text-selected");
+        //trayGridStackRef[index].getChildren().get(trayGridStackRef[index].getChildren().size()-1).setId("tile-letter-text-selected");
+        if(cachedSelection == null) {
+            cachedSelection = userTray[index];
+            userTray[index] = null;
+
+        }
+        //System.out.println(userTray[index]);
 
     }
 
@@ -141,8 +163,9 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
                 stackPane.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent event) {
-                        System.out.println("row is " + boardGridPane.getRowIndex((Node) event.getSource()) );
-                        System.out.println("Column= is " + boardGridPane.getColumnIndex((Node) event.getSource()) );
+
+                        selectBoardPoint(boardGridPane.getRowIndex((Node) event.getSource()),
+                                boardGridPane.getColumnIndex((Node) event.getSource()));
                     }
                 });
                 if(r == 7 && c == 7){
@@ -150,7 +173,26 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
                     text.setText("*");
                 }
                 boardGridPane.add(stackPane,c,r);
+                boardGridStackPaneRef[r][c] = stackPane;
             }
+        }
+    }
+
+    private void selectBoardPoint(int row, int col) {
+        if(cachedSelection != null){
+            cachedMove.put(new ScrabbleBoardPoint(row,col), cachedSelection);
+            cachedSelection = null;
+        }
+        //System.out.println(cachedMove.size());
+        renderTrayState();
+        renderCachedMove();
+    }
+
+    private void renderCachedMove() {
+        for (ScrabbleBoardPoint p: cachedMove.keySet()) {
+            StackPane sp = boardGridStackPaneRef[p.getRow()][p.getCol()];
+            renderTileText(sp,cachedMove.get(p),true);
+            sp.getChildren().get(sp.getChildren().size()-2).setId("tile-letter-text-selected");
         }
     }
 
@@ -229,6 +271,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     private void renderTrayState() {
         if(userTray != null && userTray.length ==7){
             for (int i = 0; i <userTray.length ; i++) {
+                System.out.println(userTray[i]);
                 renderTileText((StackPane) trayGridPane.getChildren().get(i), userTray[i], false);
             }
         }
@@ -281,6 +324,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         }
 
         //add and allign letter and points text
+        if(tile == null){return true;}
         Text letter = renderTileLetter(tile.readTile());
         Text points = renderTilePoints(tile.getPoints());
         stackPane.getChildren().add(letter);
@@ -329,9 +373,41 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
 
 
     private void renderBoardState() {
+        //lets reset the  board to match the actual state in case it has changed during the turn.
+        for(int r = 0;r<board.getBoardSize(); r++){
+            for (int c = 0; c< board.getBoardSize();c++){
 
-        //TODO all this will do is add any new tiles to the board
+                //if there is no tile at this spot then canfirm it has no tile there
+                if(board.readTileAt(r, c) == null){
+                    resetBoardCellStackPane(boardGridStackPaneRef[r][c]);
+                }else{
+                    //else add the tile
+                    renderTileText(boardGridStackPaneRef[r][c], board.readTileAt(r, c),true);
+                }
+            }
+        }
+
     }
+
+    /**
+     * resets the stackpane of the board to the default state...if needed.
+     * @param sp
+     * @return
+     */
+    private boolean resetBoardCellStackPane(StackPane sp) {
+        if(sp.getChildren().size() == 2){
+            //already reset
+            return true;
+        }
+        else if(sp.getChildren().size() == 5){
+            sp.getChildren().remove(sp.getChildren().size()-1);
+            sp.getChildren().remove(sp.getChildren().size()-1);
+            sp.getChildren().remove(sp.getChildren().size()-1);
+            return true;
+        }
+        return false;
+    }
+
 
     /**
      * the importer will be asking for data probably well before the data is ready to go. the animation timer
@@ -360,9 +436,13 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     @Override
     public void exportState(LogicExportState exportState) {
         ScrabbleExportState es = (ScrabbleExportState) exportState;
-        userMovedFailed = es.isUserMoveFailed();
-        userTray = es.viewUserTray();
-        board.placeTiles(es.getPlayedTiles());
+        if(newTurn){
+            userMovedFailed = es.isUserMoveFailed();
+            userTray = es.viewUserTray();
+            board.placeTiles(es.getPlayedTiles());
+        }
+
+
 
     }
 }
