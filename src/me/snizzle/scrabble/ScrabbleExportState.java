@@ -44,11 +44,15 @@ public class ScrabbleExportState implements LogicExportState {
     }
 
     /**
-     *
-     * @param userTrayState this is the current user state of the tray that will be exported to the renderer
+     * This will make a copy of the user tray before it stores it the original tray will not be touch
+     * @param userTrayState this is the current user state of the tray that will be exported to the renderer.
      */
     public void exportUserTray(ScrabbleTile[] userTrayState){
-        this.userTrayState = userTrayState;
+        ScrabbleTile[] temp = new ScrabbleTile[userTrayState.length];
+        for (int i = 0; i < userTrayState.length; i++) {
+            temp[i] = userTrayState[i].clone();
+        }
+        this.userTrayState = temp;
     }
 
     /**
@@ -57,5 +61,27 @@ public class ScrabbleExportState implements LogicExportState {
      */
     public ScrabbleTile[] viewUserTray() {
         return userTrayState;
+    }
+
+    /**
+     * sets the new tiles to add to export to the GUI. it will make a copy of them though so the state does not get corrupted
+     * @param newBoardTiles new tiles to be played
+     */
+    public  void setPlayedTiles(HashMap<ScrabbleBoardPoint, ScrabbleTile> newBoardTiles){
+        this.playedTiles = null;
+        HashMap<ScrabbleBoardPoint, ScrabbleTile> temp = new HashMap<>();
+        for (ScrabbleBoardPoint p: newBoardTiles.keySet()) {
+            temp.put(p,newBoardTiles.get(p).clone());
+        }
+
+        this.playedTiles = temp;
+    }
+
+    /**
+     *
+     * @return the latest tiles to be added to the gui
+     */
+    public HashMap<ScrabbleBoardPoint, ScrabbleTile> getPlayedTiles() {
+        return playedTiles;
     }
 }

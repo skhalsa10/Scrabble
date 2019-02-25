@@ -362,6 +362,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         ScrabbleExportState es = (ScrabbleExportState) exportState;
         userMovedFailed = es.isUserMoveFailed();
         userTray = es.viewUserTray();
+        board.placeTiles(es.getPlayedTiles());
 
     }
 }

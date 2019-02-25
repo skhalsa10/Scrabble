@@ -122,7 +122,7 @@ public class ScrabbleBoard {
         for (Map.Entry<ScrabbleBoardPoint, ScrabbleTile> entry : moves.entrySet()) {
             ScrabbleBoardPoint p = entry.getKey();
             ScrabbleTile t = entry.getValue();
-            boardTiles[p.getRow()][p.getCol()] = t;
+            boardTiles[p.getRow()][p.getCol()] = t.clone();
         }
         return true;
     }
