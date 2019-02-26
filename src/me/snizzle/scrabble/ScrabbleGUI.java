@@ -1,10 +1,12 @@
 package me.snizzle.scrabble;
 
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -17,6 +19,7 @@ import me.snizzle.game.LogicImportState;
 import me.snizzle.game.Renderable;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 
 /**
@@ -37,6 +40,10 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     private Scene scene;
     private VBox root;
     private Label title;
+    private Button reset;
+    private Button playMove;
+    private Pane buttonSpacer;
+    private HBox buttonContainer;
 
 
 
@@ -83,6 +90,30 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         trayGridStackRef = new StackPane[7];
         initTray();
 
+        //initialize Buttons
+        reset = new Button("Reset Move");
+        reset.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                resetCachedMove();
+            }
+        });
+        reset.getStyleClass().add("reset-button");
+        playMove = new Button("Play Move");
+        playMove.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                playMoveHandler();
+            }
+        });
+        playMove.getStyleClass().add("play-button");
+        buttonSpacer = new Pane();
+        buttonContainer = new HBox();
+        buttonContainer.getChildren().addAll(reset, buttonSpacer,playMove);
+        buttonContainer.setHgrow(buttonSpacer,Priority.ALWAYS);
+
+
+
 
         //initialize the scene and root node attach stylesheets and add everything togethor
         root = new VBox();
@@ -95,13 +126,63 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         //root.getChildren().add(bPane);
         root.getChildren().add(boardGridPane);
         root.getChildren().add(trayGridPane);
+        root.getChildren().add(buttonContainer);
         root.setAlignment(Pos.CENTER);
+
         gameStage.setMinHeight(calculateMinHeight());
         gameStage.setMinWidth(calculateMinWidth());
 
 
 
 
+    }
+
+    private void playMoveHandler() {
+        System.out.println("we wilhandle the play button one day");
+    }
+
+    /**
+     * this will undo the current cached move. delete  rendered tile on the board and put it back into the tray
+     */
+    private void resetCachedMove() {
+
+
+        Iterator cachedIterator = cachedMove.keySet().iterator();
+
+        for (int i = 0; i < userTray.length; i++) {
+            ScrabbleTile tile = userTray[i];
+            if (tile == null){
+                if(cachedSelection != null){
+                    userTray[i] = cachedSelection;
+                    cachedSelection = null;
+                    continue;
+                }
+                if(!cachedIterator.hasNext()){
+                    System.out.println("error cachedMove size does not match missing tiles in user tray");
+                }
+                ScrabbleBoardPoint p = (ScrabbleBoardPoint)cachedIterator.next();
+                unRenderBoardTile(boardGridStackPaneRef[p.getRow()][p.getCol()]);
+                userTray[i] = cachedMove.get(p);
+                cachedIterator.remove();
+
+            }
+
+        }
+
+        renderTrayState();
+    }
+
+    private boolean unRenderBoardTile(StackPane sp) {
+
+        if(sp.getChildren().size() < 5){
+            return false;
+        }
+
+        sp.getChildren().remove(sp.getChildren().size() -1);
+        sp.getChildren().remove(sp.getChildren().size() -1);
+        sp.getChildren().remove(sp.getChildren().size() -1);
+
+        return true;
     }
 
     /**
@@ -131,17 +212,18 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
 
     }
 
+    /**
+     * select the tile to place on the board
+     * @param index
+     */
     private void selectTile(int index) {
-        System.out.println(userTray[index]);
-
-        trayGridStackRef[index].getChildren().get(trayGridStackRef[index].getChildren().size()-2).setId("tile-letter-text-selected");
-        //trayGridStackRef[index].getChildren().get(trayGridStackRef[index].getChildren().size()-1).setId("tile-letter-text-selected");
         if(cachedSelection == null) {
+            trayGridStackRef[index].getChildren().get(trayGridStackRef[index].getChildren().size()-2).setId("tile-letter-text-selected");
+            trayGridStackRef[index].getChildren().get(trayGridStackRef[index].getChildren().size()-1).setId("tile-points-text-selected");
             cachedSelection = userTray[index];
             userTray[index] = null;
 
         }
-        //System.out.println(userTray[index]);
 
     }
 
@@ -178,7 +260,16 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         }
     }
 
+    /**
+     * the board point to place the tile on a tile must be selected for this point to be registered
+     * @param row
+     * @param col
+     */
     private void selectBoardPoint(int row, int col) {
+        if(board.readTileAt(row,col) != null){return;}
+        if(cachedMove.containsKey(new ScrabbleBoardPoint(row,col))){
+            return;
+        }
         if(cachedSelection != null){
             cachedMove.put(new ScrabbleBoardPoint(row,col), cachedSelection);
             cachedSelection = null;
@@ -271,7 +362,6 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     private void renderTrayState() {
         if(userTray != null && userTray.length ==7){
             for (int i = 0; i <userTray.length ; i++) {
-                System.out.println(userTray[i]);
                 renderTileText((StackPane) trayGridPane.getChildren().get(i), userTray[i], false);
             }
         }
@@ -395,17 +485,15 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
      * @return
      */
     private boolean resetBoardCellStackPane(StackPane sp) {
-        if(sp.getChildren().size() == 2){
+        if(sp.getChildren().size() < 2){
             //already reset
-            return true;
+            return false;
         }
-        else if(sp.getChildren().size() == 5){
+        //delete last child until there are only 2 left
+        while(sp.getChildren().size() > 2){
             sp.getChildren().remove(sp.getChildren().size()-1);
-            sp.getChildren().remove(sp.getChildren().size()-1);
-            sp.getChildren().remove(sp.getChildren().size()-1);
-            return true;
         }
-        return false;
+        return true;
     }
 
 

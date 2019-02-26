@@ -34,7 +34,7 @@
 
 #board-pane {
     -fx-border-style: solid inside;
-    -fx-border-width: 3 0 0 0;
+    -fx-border-width: 0 0 0 0;
     -fx-border-insets: -6 0 0 0;
     -fx-padding: 2;
     -fx-border-color: black;
@@ -60,4 +60,57 @@
     -fx-font-weight: bold;
     -fx-font-family: "Bitstream Charter";
 
+}
+#tile-points-text-selected {
+    -fx-padding: 0 5 0 0;
+    -fx-fill: gold;
+    -fx-font-weight: bold;
+    -fx-font-family: "Bitstream Charter";
+
+}
+
+.reset-button{
+    -fx-text-fill: #ff00f7;
+    -fx-font-size: 25px;
+    -fx-border-color: #ff00f7;
+    -fx-border-radius: 20;
+    -fx-background-color: #0c586b;
+
+}
+
+.reset-button:pressed{
+    -fx-text-fill: #0c586b;
+    -fx-font-size: 25px;
+    -fx-border-color: #0c586b;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-background-color: #ff00f7;
+}
+
+.reset-button:hover{
+    -fx-scale-y: 1.02;
+    -fx-scale-x: 1.02;
+}
+
+.play-button{
+    -fx-text-fill: lime;
+    -fx-font-size: 25px;
+    -fx-border-color: lime;
+    -fx-border-radius: 20;
+    -fx-background-color: #0c586b;
+
+}
+
+.play-button:pressed{
+    -fx-text-fill: #0c586b;
+    -fx-font-size: 25px;
+    -fx-border-color: #0c586b;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-background-color: lime;
+}
+
+.play-button:hover{
+    -fx-scale-y: 1.02;
+    -fx-scale-x: 1.02;
 }
