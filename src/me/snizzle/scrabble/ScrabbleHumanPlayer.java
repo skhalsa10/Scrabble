@@ -15,13 +15,16 @@ public class ScrabbleHumanPlayer extends ScrabblePlayer{
     @Override
     public boolean takeTurn() {
         if(currentMove == null){return false;}
+        System.out.println("taking turn");
         //assumes the move is cached to play.
         if(!checkCachedMoveValid()){
             return false;
         }
+        System.out.println("move valid");
         if(!approveMove()){
             return false;
         }
+        System.out.println("move approved");
         tileTray.fillTray();
         return true;
     }

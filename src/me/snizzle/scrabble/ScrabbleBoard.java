@@ -19,6 +19,7 @@ public class ScrabbleBoard {
     private ScrabbleTile[][] boardTiles;
     private int boardSize;
     private ScrabbleRules rules;
+    HashMap<ScrabbleBoardPoint, ScrabbleTile> cachedMove;
 
     /**
      * constructs the default board
@@ -115,6 +116,8 @@ public class ScrabbleBoard {
             return true;
         }
 
+        cachedMove = moves;
+
         for (ScrabbleBoardPoint p: moves.keySet()) {
             if(boardTiles[p.getRow()][p.getCol()] != null){
                 return false;
@@ -151,10 +154,15 @@ public class ScrabbleBoard {
     public boolean validMove(HashMap<ScrabbleBoardPoint, ScrabbleTile> moves, ScrabbleRules rules){
         //TODO need to first check if any tiles are mapped to a board point that already has a tile
         //TODO should I move this out of the board?
-        return false;
+        return true;
     }
 
-    public void export() {
+    public HashMap<ScrabbleBoardPoint, ScrabbleTile> export() {
+
+        HashMap<ScrabbleBoardPoint, ScrabbleTile> temp = cachedMove;
+        cachedMove = null;
+        return temp;
+
     }
 
     public int getBoardSize() {

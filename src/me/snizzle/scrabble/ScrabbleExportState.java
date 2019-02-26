@@ -69,6 +69,7 @@ public class ScrabbleExportState implements LogicExportState {
      */
     public  void setPlayedTiles(HashMap<ScrabbleBoardPoint, ScrabbleTile> newBoardTiles){
         this.playedTiles = null;
+        if(newBoardTiles == null){return;}
         HashMap<ScrabbleBoardPoint, ScrabbleTile> temp = new HashMap<>();
         for (ScrabbleBoardPoint p: newBoardTiles.keySet()) {
             temp.put(p,newBoardTiles.get(p).clone());

@@ -53,6 +53,31 @@
     -fx-font-weight: bold;
     -fx-font-family: "Bitstream Charter";
 }
+#tile-letter-text-3w{
+    -fx-font-size : 30px;
+    -fx-fill: red;
+    -fx-font-weight: bold;
+    -fx-font-family: "Bitstream Charter";
+}
+#tile-letter-text-2w{
+    -fx-font-size : 30px;
+    -fx-fill: hotpink;
+    -fx-font-weight: bold;
+    -fx-font-family: "Bitstream Charter";
+}
+
+#tile-letter-text-3l{
+    -fx-font-size : 30px;
+    -fx-fill: blueviolet;
+    -fx-font-weight: bold;
+    -fx-font-family: "Bitstream Charter";
+}
+#tile-letter-text-2l{
+    -fx-font-size : 30px;
+    -fx-fill: #006DFF;
+    -fx-font-weight: bold;
+    -fx-font-family: "Bitstream Charter";
+}
 
 #tile-points-text {
     -fx-padding: 0 5 0 0;
@@ -64,6 +89,37 @@
 #tile-points-text-selected {
     -fx-padding: 0 5 0 0;
     -fx-fill: gold;
+    -fx-font-weight: bold;
+    -fx-font-family: "Bitstream Charter";
+
+}
+#tile-points-text-3w {
+    -fx-padding: 0 5 0 0;
+    -fx-fill: red;
+    -fx-font-weight: bold;
+    -fx-font-family: "Bitstream Charter";
+
+}
+
+#tile-points-text-2w {
+    -fx-padding: 0 5 0 0;
+    -fx-fill: hotpink;
+    -fx-font-weight: bold;
+    -fx-font-family: "Bitstream Charter";
+
+}
+
+#tile-points-text-3l {
+    -fx-padding: 0 5 0 0;
+    -fx-fill: blueviolet;
+    -fx-font-weight: bold;
+    -fx-font-family: "Bitstream Charter";
+
+}
+
+#tile-points-text-2l {
+    -fx-padding: 0 5 0 0;
+    -fx-fill: #006DFF;
     -fx-font-weight: bold;
     -fx-font-family: "Bitstream Charter";
 

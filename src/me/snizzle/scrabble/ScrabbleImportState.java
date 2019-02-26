@@ -2,6 +2,7 @@ package me.snizzle.scrabble;
 
 import me.snizzle.game.LogicImportState;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -12,6 +13,7 @@ import java.util.HashMap;
  */
 public class ScrabbleImportState implements LogicImportState {
     private HashMap<ScrabbleBoardPoint, ScrabbleTile> move;
+    private ArrayList<ScrabbleTile> blankConversions;
 
     public ScrabbleImportState(){
         move = new HashMap<>();

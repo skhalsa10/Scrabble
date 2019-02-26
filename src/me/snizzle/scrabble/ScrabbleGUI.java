@@ -55,6 +55,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     private boolean newTurn;
     private HashMap<ScrabbleBoardPoint,ScrabbleTile> cachedMove;
     private ScrabbleTile cachedSelection;
+    private ScrabbleImportState importState;
 
 
     /**
@@ -70,6 +71,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         cachedMove = new HashMap<>();
         importerReady = false;
         newTurn = true;
+        importState = new ScrabbleImportState();
 
         //set up jfx stuff
         this.gameStage = gameStage;
@@ -138,7 +140,8 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     }
 
     private void playMoveHandler() {
-        System.out.println("we wilhandle the play button one day");
+        //System.out.println("we wilhandle the play button one day");
+        importerReady  = true;
     }
 
     /**
@@ -473,10 +476,41 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
                 }else{
                     //else add the tile
                     renderTileText(boardGridStackPaneRef[r][c], board.readTileAt(r, c),true);
+                    setTextColor(r,c);
+                    //TODO should I change the tiles to display to change the color
                 }
             }
         }
 
+    }
+
+    /**
+     * sets the text color of the tile on the board at r and c
+     * @param r
+     * @param c
+     */
+    private void setTextColor(int r, int c) {
+        //get the text nodes and change the id based on  underlying board value
+        if (board.getBoardValueAt(r, c) - 'w' == 3) {
+            boardGridStackPaneRef[r][c].getChildren().get(boardGridStackPaneRef[r][c].getChildren().size() - 2).setId("tile-letter-text-3w");
+            boardGridStackPaneRef[r][c].getChildren().get(boardGridStackPaneRef[r][c].getChildren().size() - 1).setId("tile-points-text-3w");
+        }
+        else if(board.getBoardValueAt(r,c)- 'w' == 2){
+            boardGridStackPaneRef[r][c].getChildren().get(boardGridStackPaneRef[r][c].getChildren().size() - 2).setId("tile-letter-text-2w");
+            boardGridStackPaneRef[r][c].getChildren().get(boardGridStackPaneRef[r][c].getChildren().size() - 1).setId("tile-points-text-2w");
+        }
+        else if(board.getBoardValueAt(r,c) == 3){
+            boardGridStackPaneRef[r][c].getChildren().get(boardGridStackPaneRef[r][c].getChildren().size() - 2).setId("tile-letter-text-3l");
+            boardGridStackPaneRef[r][c].getChildren().get(boardGridStackPaneRef[r][c].getChildren().size() - 1).setId("tile-points-text-3l");
+        }
+        else if(board.getBoardValueAt(r,c) == 2){
+            boardGridStackPaneRef[r][c].getChildren().get(boardGridStackPaneRef[r][c].getChildren().size() - 2).setId("tile-letter-text-2l");
+            boardGridStackPaneRef[r][c].getChildren().get(boardGridStackPaneRef[r][c].getChildren().size() - 1).setId("tile-points-text-2l");
+        }
+        else{
+            boardGridStackPaneRef[r][c].getChildren().get(boardGridStackPaneRef[r][c].getChildren().size() - 2).setId("tile-letter-text");
+            boardGridStackPaneRef[r][c].getChildren().get(boardGridStackPaneRef[r][c].getChildren().size() - 1).setId("tile-points-text");
+        }
     }
 
     /**
@@ -505,16 +539,17 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
      */
     @Override
     public boolean timeToFetchData() {
-        //TODO
+
         return importerReady;
     }
 
     @Override
     public LogicImportState fetch() {
-        //TODO
+        importState.setMove(cachedMove);
+        cachedMove = new HashMap<>();
         importerReady = false;
         newTurn = true;
-        return null;
+        return importState;
     }
 
     /**
