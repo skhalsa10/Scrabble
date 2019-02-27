@@ -40,7 +40,10 @@ public class ScrabbleGameLogic implements GameLogic {
     }
 
 
-
+    /**
+     * repopulate the Export state with new data and send it to the Exporter.
+     * @param exporter
+     */
     public void export(Exporter exporter){
         //I will update the exportS with the current tray and the new tiles played since last render
         exportS.exportUserTray(player.tileTrayToArray());

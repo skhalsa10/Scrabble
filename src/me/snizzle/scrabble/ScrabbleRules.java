@@ -1,6 +1,8 @@
 package me.snizzle.scrabble;
 
-import java.util.HashMap;
+import javafx.scene.control.skin.TextInputControlSkin;
+
+import java.util.*;
 
 /**
  * these rules will be used as a rule utility almost. these rules will be for the standard scrabble. if different
@@ -46,8 +48,8 @@ public class ScrabbleRules {
 
     private HashMap<Character,Integer> charPoints;
     private HashMap<Character,Integer> charCount;
-    private boolean isFirstMove;
     private ScrabbleWords dictionary;
+    //private ScrabbleBoard board;
 
     public ScrabbleRules(){
         this("resources/twl06.txt");
@@ -56,7 +58,7 @@ public class ScrabbleRules {
     public ScrabbleRules(String fileName){
         initCharMaps();
         dictionary = new ScrabbleWords(fileName);
-        isFirstMove = true;
+
     }
 
     /**
@@ -140,5 +142,371 @@ public class ScrabbleRules {
         charCount.put('q',1);
         charCount.put('z',1);
 
+    }
+
+    /**
+     * this will assume that the tiles being placed on the board are valid and are contained in the tray.
+     *
+     * the purpose of this method is to check if the given move can be played on the board.
+     *
+     * this will check both the validity of where the tiles are placed and all words that are created  are real words
+     *
+     * @param currentMove to check
+     * @param board the board to check the move against.
+     * @return true or false accordingly.
+     */
+    public boolean isMoveValid(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove, ScrabbleBoard board) {
+
+        //lets first confirm that none of of the points already have tiles on the board.
+        for (ScrabbleBoardPoint p: currentMove.keySet()) {
+            //if there is a tile on the board already then this is an illegal move return false
+           if(board.readTileAt(p.getRow(),p.getCol()) != null){return false;}
+        }
+
+        //if first move must be in the middle and have at least two tiles
+        if(isFirstMove(board)){
+            if(!isFirstMoveLegal(currentMove.keySet(), board.getBoardSize())){
+                return false;
+            }
+        }
+        //must touch an already played tile
+        if(!currentMoveTouchesTile(currentMove.keySet(),board)){
+            return false;
+        }
+
+        Direction currentDirection = calcDirection(currentMove.keySet());
+        //diagnal moves are illegal return false
+        if (currentDirection == Direction.DIAG || currentDirection == Direction.ERROR){
+            return false;
+        }
+
+        HashSet<ArrayList<ScrabbleBoardPoint>> wordPoints = getWordPointsSet(currentMove, board, currentDirection);
+        System.out.println(wordPoints.size());
+        return true;
+    }
+
+    private HashSet<ArrayList<ScrabbleBoardPoint>> 
+    getWordPointsSet(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove, ScrabbleBoard board, Direction direction) {
+        HashSet<ArrayList<ScrabbleBoardPoint>> wordsSet = new HashSet<>();
+        ArrayList<ScrabbleBoardPoint> word = new ArrayList<>();
+
+        Iterator<ScrabbleBoardPoint> iterator = currentMove.keySet().iterator();
+        ScrabbleBoardPoint p = iterator.next();
+        //if the direction is horizontal get the horizontal word
+        if(direction == Direction.HORIZ){
+            word = getHorizontalWord(p, board);
+            wordsSet.add(word);
+
+            //check to see if the first p has a vertical
+            if(isVerticalWordEnd(p, board)){
+                // since it is a vertical end lets calculate the word
+
+                word = getVerticalWord(p, board);
+                wordsSet.add(word);
+            }
+
+            //after getting the horizontal word find vertical words that make new words on the rest of the points
+            while(iterator.hasNext()){
+                p = iterator.next();
+
+                //check to see if the p is an end piece to a vertical word. if it is a middle piece it will not make a new word
+                if(isVerticalWordEnd(p, board)){
+                    // since it is a vertical end lets calculate the word
+
+                    word = getVerticalWord(p, board);
+                    wordsSet.add(word);
+                }
+            }
+            return wordsSet;
+        }
+        //lets to the same if
+        if(direction == Direction.VERT){
+            word = getVerticalWord(p, board);
+            wordsSet.add(word);
+
+            //check to see if the first p makes up a horizontal word
+            if(isHorizontalWordEnd(p,board)){
+                word = getHorizontalWord(p,board);
+                wordsSet.add(word);
+            }
+            //after getting the main vertical word added check for any horizontal word ends and add those horizontal words
+            while(iterator.hasNext()){
+                p = iterator.next();
+
+                //check to see if the first p makes up a horizontal word
+                if(isHorizontalWordEnd(p,board)){
+                    word = getHorizontalWord(p,board);
+                    wordsSet.add(word);
+                }
+            }
+            return wordsSet;
+        }
+
+        //the last case we are dealing with is if we place a single tile and there is no direction
+        //just check if it is a vertical or horizontal word end and get the words
+        if(isVerticalWordEnd(p,board)){
+            word = getVerticalWord(p, board);
+            wordsSet.add(word);
+        }
+        if(isHorizontalWordEnd(p,board)){
+            word = getHorizontalWord(p,board);
+            wordsSet.add(word);
+        }
+
+
+        return wordsSet;
+    }
+
+    private boolean isHorizontalWordEnd(ScrabbleBoardPoint p, ScrabbleBoard board) {
+        //if on left edge
+        if (p.getCol() == 0 && board.readTileAt(p.getRow(), p.getCol() + 1) != null) {
+            return true;
+        }
+        //if left end
+        if (board.readTileAt(p.getRow(), p.getCol() - 1) == null &&
+                p.getCol() != board.getBoardSize()-1 &&
+                board.readTileAt(p.getRow(), p.getCol() + 1) != null){
+
+            return true;
+        }
+        //checking if it is a right end
+        //on the edge
+        if(p.getCol() == board.getBoardSize()-1 && board.readTileAt(p.getRow(),p.getCol()-1) != null){
+            return true;
+        }
+        //not on edge
+        if(board.readTileAt(p.getRow(),p.getCol() +1) ==null &&
+                p.getCol() != 0 && board.readTileAt(p.getRow(),p.getCol()-1) != null){
+            return true;
+        }
+
+        return false;
+
+    }
+
+
+    /**
+     * this method will assume there is a vertical word containing the point p. it will return the points representing a the
+     * vertical word containing the point
+     * @param p point in the vertical word
+     * @param board the board to check against
+     * @return
+     */
+    private ArrayList<ScrabbleBoardPoint> getVerticalWord(ScrabbleBoardPoint p, ScrabbleBoard board) {
+        ArrayList<ScrabbleBoardPoint> word = new ArrayList<>();
+        //must find the top most point
+        ScrabbleBoardPoint p1 = getFirstVerticalP(p, board);
+        //okay now that p1 is the first point we can go down from there
+        buildVerticalWord(word, p1, board);
+        return word;
+    }
+
+    /**
+     * this takes a reference to an arraylist of points and build a list of points representing a vertical word
+     * @param word builds a word at this refernce
+     * @param p1 point to build down from
+     * @param board board to refernce
+     */
+    private void buildVerticalWord(ArrayList<ScrabbleBoardPoint> word, ScrabbleBoardPoint p1, ScrabbleBoard board) {
+        //lets add the point
+        word.add(p1);
+        //if this point happens to be the on the last row of the board return we have reached the end
+        if(p1.getRow() == board.getBoardSize()-1){
+            return;
+        }
+        //if there is no more tiles down return as we have reached the end of the word
+        if(board.readTileAt(p1.getRow()+1, p1.getCol()) == null){
+            return;
+        }
+        //else finish building the word starting at the tile below
+        buildVerticalWord(word, new ScrabbleBoardPoint(p1.getRow()+1, p1.getCol()),board);
+    }
+
+    /**
+     *     returns the top most point in a vertical word
+     */
+    private ScrabbleBoardPoint getFirstVerticalP(ScrabbleBoardPoint p, ScrabbleBoard board) {
+        if (p.getRow() == 0) {
+            return p;
+        }
+        if (board.readTileAt(p.getRow() - 1, p.getCol()) == null) {
+            return p;
+        }
+        return getFirstVerticalP(new ScrabbleBoardPoint(p.getRow()-1, p.getCol()), board);
+    }
+    /**
+     * returns true it the point p represent the end of a vertical word
+     * @param p
+     * @param board
+     * @return
+     */
+    private boolean isVerticalWordEnd(ScrabbleBoardPoint p, ScrabbleBoard board) {
+        //if at top of board
+        if(p.getRow() == 0 && board.readTileAt(p.getRow()+1, p.getCol()) != null){
+            return true;
+        }
+        // tile above is empty but tile below is not ... end piece
+        if(board.readTileAt(p.getRow()-1, p.getCol()) == null &&
+                p.getRow() != board.getBoardSize()-1 &&
+                board.readTileAt(p.getRow()+1, p.getCol()) != null){
+            return true;
+        }
+
+        //if at bottom of board
+        if(p.getRow() == board.getBoardSize()-1 && board.readTileAt(p.getRow()-1, p.getCol()) != null){
+            return true;
+        }
+        // tile below is empty but tile above is not ... end piece
+        if(board.readTileAt(p.getRow()+1, p.getCol()) == null &&
+                p.getRow() != 0 && board.readTileAt(p.getRow()-1, p.getCol()) != null){
+            return true;
+        }
+
+        return false;
+
+    }
+
+    private ArrayList<ScrabbleBoardPoint> getHorizontalWord(ScrabbleBoardPoint p2, ScrabbleBoard board) {
+        ArrayList<ScrabbleBoardPoint> word = new ArrayList<>();
+        ScrabbleBoardPoint p1 = getFirstHorizontalP(p2, board);
+        buildHorizontalWord(word, p1, board);
+        return word;
+    }
+
+    private void buildHorizontalWord(ArrayList<ScrabbleBoardPoint> word,
+                                     ScrabbleBoardPoint p, ScrabbleBoard board) {
+        //add the p to the word
+        word.add(p);
+        //if we get to the edge of the board the word is over
+        if(p.getCol() == board.getBoardSize()-1){
+            return;
+        }
+        //if the next horizontal tile iss null the end of the word is found
+        if(board.readTileAt(p.getRow(),p.getCol()+1) == null){
+            return;
+        }
+        //continue to build the word
+        buildHorizontalWord(word, new ScrabbleBoardPoint(p.getRow(),p.getCol()+1), board);
+    }
+
+    private ScrabbleBoardPoint getFirstHorizontalP(ScrabbleBoardPoint p2, ScrabbleBoard board) {
+        //recursion endpoint where we reach the end of the board
+        if(p2.getCol() == 0){
+            return p2;
+        }
+        if(board.readTileAt(p2.getRow(), p2.getCol()-1) == null){
+            return p2;
+        }
+        return getFirstHorizontalP(new ScrabbleBoardPoint(p2.getRow(),p2.getCol()-1), board);
+
+    }
+
+    /**
+     * the first move needs to be at least 2 letters and contain the center spot
+     * @return
+     * @param keySet
+     */
+    private boolean isFirstMoveLegal(Set<ScrabbleBoardPoint> keySet, int boardSize) {
+        if(keySet.size()<2){
+            return false;
+
+        }
+        for (ScrabbleBoardPoint p: keySet) {
+            if(p.equals(new ScrabbleBoardPoint((int)boardSize/2, (int)boardSize/2))){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @return returns true if the center of the board is empty
+     */
+    private boolean isFirstMove(ScrabbleBoard board) {
+        if(board.readTileAt(board.getBoardSize()/2, board.getBoardSize()/2) == null){
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * this will return true if ANY tile in the move touches a current tile already played on the board
+     * @param keySet points in the move to check if there are tiles touching around it
+     * @param board to check against
+     * @return true if any tile touches a played tile on the board flase otherwise
+     */
+    private boolean currentMoveTouchesTile(Set<ScrabbleBoardPoint> keySet, ScrabbleBoard board) {
+        //if this is the first move? cant touch tiles then just return true
+        if(board.readTileAt(board.getBoardSize()/2,board.getBoardSize()/2)== null){
+            return true;
+        }
+
+        for (ScrabbleBoardPoint p: keySet) {
+            //check the left side
+            if(p.getCol()-1 >=0 && board.readTileAt(p.getRow(),p.getCol()-1) != null){
+                return true;
+            }
+            //check right side
+            if(p.getCol()+1 <=board.getBoardSize() && board.readTileAt(p.getRow(),p.getCol()+1) != null){
+                return true;
+            }
+            //check top side
+            if(p.getRow()-1 >= 0 && board.readTileAt(p.getRow()-1,p.getCol()) != null){
+                return true;
+            }
+            //check bottom side
+            if(p.getRow()+1 <= board.getBoardSize() && board.readTileAt(p.getRow()+1,p.getCol()) != null){
+                return true;
+            }
+
+        }
+
+        return false;
+    }
+
+    /**
+     * this method will return the direction of the move. NONE means it is a single tile with no direction.
+     * this is a legal move. Horizontal and vertical are Legal. and ... ERROR and Diagnal are illegal
+     * @param keySet sert of board points being played
+     * @return Direction
+     */
+    private Direction calcDirection(Set<ScrabbleBoardPoint> keySet) {
+        // only one of these can be true by the end
+        boolean isHorizontal = true;
+        boolean isVertical = true;
+        //if no tiles are played this is an error
+        if (keySet.size() == 0) {
+            return Direction.ERROR;
+        }
+        //one tile is valid
+        if (keySet.size() == 1) {
+            return Direction.NONE;
+        }
+        //if more than one tile either all Rows are equal for horizontal or all Col are equal for vertical
+        if(keySet.size() >= 2){
+            Iterator<ScrabbleBoardPoint> iterator = keySet.iterator();
+            ScrabbleBoardPoint p1 = iterator.next();
+            while(iterator.hasNext()) {
+                ScrabbleBoardPoint p2 = iterator.next();
+                //if a row is not the same it cant be horizontal
+                if (p1.getRow() != p2.getRow()) {
+                    isHorizontal = false;
+                }
+                //if col is not the same it cannot be vertical
+                if (p1.getCol() != p2.getCol()) {
+                    isVertical = false;
+                }
+                p1 = p2;
+            }
+        }
+        if(isHorizontal && !isVertical){return Direction.HORIZ;}
+        if(!isHorizontal && isVertical){return Direction.VERT;}
+        return Direction.ERROR;
+    }
+
+    enum Direction {
+        HORIZ, VERT, DIAG, NONE, ERROR
     }
 }

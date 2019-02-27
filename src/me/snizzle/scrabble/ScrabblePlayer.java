@@ -63,10 +63,13 @@ public abstract class ScrabblePlayer {
         if(!tileTray.contains(new ArrayList<>(currentMove.values()))){
             return false;
         }
-
-        if(!board.validMove(currentMove, rules)){
+        if (!rules.isMoveValid(currentMove, board)){
             return false;
         }
+
+        /*if(!board.validMove(currentMove, rules)){
+            return false;
+        }*/
         return true;
     }
 
@@ -96,4 +99,6 @@ public abstract class ScrabblePlayer {
     public ScrabbleTile[] tileTrayToArray(){
         return tileTray.toArray();
     }
+
+
 }
