@@ -170,3 +170,13 @@
     -fx-scale-y: 1.02;
     -fx-scale-x: 1.02;
 }
+
+#score-num{
+    -fx-font-size: 25px;
+    -fx-text-fill: lightblue;
+}
+
+#score{
+    -fx-font-size: 14px;
+    -fx-text-fill: lightblue;
+}

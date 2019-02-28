@@ -2,8 +2,8 @@ package me.snizzle.scrabble;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -42,9 +42,15 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     private Label title;
     private Button reset;
     private Button playMove;
-    private Pane buttonSpacer;
+    private Pane buttonSpacer1;
+    private Pane buttonSpacer2;
     private HBox buttonContainer;
-
+    private VBox playerScoreBox;
+    private Label playerScoreNum;
+    private Label playerScore;
+    private VBox compScoreBox;
+    private Label compScoreNum;
+    private Label compScore;
 
 
     //declare state needed to render but not FX objects
@@ -109,10 +115,35 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
             }
         });
         playMove.getStyleClass().add("play-button");
-        buttonSpacer = new Pane();
+        //init scores
+        //player First
+        playerScoreBox = new VBox();
+        playerScoreNum = new Label("0");
+        playerScoreNum.setId("score-num");
+        playerScore = new Label("Player Score");
+        playerScore.setId("score");
+        playerScoreBox.getChildren().addAll(playerScoreNum,playerScore);
+        playerScoreBox.setAlignment(Pos.BOTTOM_CENTER);
+        playerScoreBox.setPadding(new Insets(2,7,2,2));
+        //now the computer score
+        compScoreBox = new VBox();
+        compScoreNum = new Label("0");
+        compScoreNum.setId("score-num");
+        compScore = new Label("Comp Score");
+        compScore.setId("score");
+        compScoreBox.getChildren().addAll(compScoreNum,compScore);
+        compScoreBox.setAlignment(Pos.BOTTOM_CENTER);
+        compScoreBox.setPadding(new Insets(2, 2,2,7));
+
+        //build spacers
+        buttonSpacer1 = new Pane();
+        buttonSpacer2 = new Pane();
         buttonContainer = new HBox();
-        buttonContainer.getChildren().addAll(reset, buttonSpacer,playMove);
-        buttonContainer.setHgrow(buttonSpacer,Priority.ALWAYS);
+        buttonContainer.getChildren().addAll(reset, buttonSpacer1,playerScoreBox,
+                                                compScoreBox,buttonSpacer2,playMove);
+        buttonContainer.setHgrow(buttonSpacer1,Priority.ALWAYS);
+        buttonContainer.setHgrow(buttonSpacer2,Priority.ALWAYS);
+
 
 
 
@@ -564,8 +595,5 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
             userTray = es.viewUserTray();
             board.placeTiles(es.getPlayedTiles());
         }
-
-
-
     }
 }
