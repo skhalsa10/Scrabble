@@ -157,6 +157,8 @@ public class ScrabbleRules {
      */
     public boolean isMoveValid(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove, ScrabbleBoard board) {
 
+        //printCurrentMove(currentMove);
+
         //lets first confirm that none of of the points already have tiles on the board.
         for (ScrabbleBoardPoint p: currentMove.keySet()) {
             //if there is a tile on the board already then this is an illegal move return false
@@ -182,11 +184,17 @@ public class ScrabbleRules {
 
         HashSet<ArrayList<ScrabbleBoardPoint>> wordPoints = getWordPointsSet(currentMove, board, currentDirection);
 
-        //if(!wordsInDictionary(wordPoints, board)){
-           // return false;
-        //}
+        if(!wordsInDictionary(wordPoints, board, currentMove)){
+            return false;
+        }
 
         return true;
+    }
+
+    private void printCurrentMove(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove) {
+        for (ScrabbleBoardPoint p: currentMove.keySet() ) {
+            System.out.println("r: " + p.getRow() + " c: " + p.getCol() + " -> " + currentMove.get(p).readTile());
+        }
     }
 
     /**
@@ -194,11 +202,19 @@ public class ScrabbleRules {
      * @param wordPoints hashset of list of points
      * @return true if all words are breal words in dictionary
      */
-    private boolean wordsInDictionary(HashSet<ArrayList<ScrabbleBoardPoint>> wordPoints, ScrabbleBoard board) {
-        ArrayList<String> wordsAsStrings = convertPointsToStrings(wordPoints, board);
+    private boolean wordsInDictionary(HashSet<ArrayList<ScrabbleBoardPoint>> wordPoints,
+                                      ScrabbleBoard board,
+                                      HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove) {
+
+        ArrayList<String> wordsAsStrings = convertPointsToStrings(wordPoints, board, currentMove);
         for (String word: wordsAsStrings ) {
-            System.out.println(word);
+            //System.out.println(word);
+            if(!dictionary.verify(word)){
+                System.out.println(word + " is not a word");
+                return false;
+            }
         }
+
         return true;
     }
 
@@ -208,13 +224,24 @@ public class ScrabbleRules {
      * @param board
      * @return
      */
-    private ArrayList<String> convertPointsToStrings(HashSet<ArrayList<ScrabbleBoardPoint>> wordPoints, ScrabbleBoard board) {
+    private ArrayList<String> convertPointsToStrings(HashSet<ArrayList<ScrabbleBoardPoint>> wordPoints,
+                                                     ScrabbleBoard board,
+                                                     HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove) {
         ArrayList<String> temp = new ArrayList<>();
         for (ArrayList<ScrabbleBoardPoint> list: wordPoints) {
             StringBuilder string = new StringBuilder();
             for (ScrabbleBoardPoint p: list ) {
-                System.out.println(p.getCol());
-                string.append(board.readTileAt(p.getRow(),p.getCol()));
+                //if the tile on the board is not null get the letter of it
+                if(board.readTileAt(p.getRow(),p.getCol()) != null) {
+                    //System.out.println(board.readTileAt(p.getRow(), p.getCol()).readTile());
+                    string.append(board.readTileAt(p.getRow(),p.getCol()).readTile());
+                }else if(currentMove.containsKey(p)){
+                    //if it is null then it should be in the currentMove and point to a tile
+                    string.append(currentMove.get(p).readTile());
+                }
+                else{
+                    System.out.println("Error in convertPointsToStrings");
+                }
             }
             temp.add(string.toString());
 
@@ -240,7 +267,6 @@ public class ScrabbleRules {
         //if the direction is horizontal get the horizontal word
         if(direction == Direction.HORIZ){
             word = getHorizontalWord(currentMove,p, board);
-            System.out.println(word.size());
             wordsSet.add(word);
 
             //check to see if the first p has a vertical
@@ -351,7 +377,7 @@ public class ScrabbleRules {
         //must find the top most point
         ScrabbleBoardPoint p1 = getFirstVerticalP(currentMove, p, board);
         //okay now that p1 is the first point we can go down from there
-        buildVerticalWord(word, p1, board);
+        buildVerticalWord(word, p1, board, currentMove);
         return word;
     }
 
@@ -361,7 +387,9 @@ public class ScrabbleRules {
      * @param p1 point to build down from
      * @param board board to refernce
      */
-    private void buildVerticalWord(ArrayList<ScrabbleBoardPoint> word, ScrabbleBoardPoint p1, ScrabbleBoard board) {
+    private void buildVerticalWord(ArrayList<ScrabbleBoardPoint> word,
+                                   ScrabbleBoardPoint p1, ScrabbleBoard board,
+                                   HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove) {
         //lets add the point
         word.add(p1);
         //if this point happens to be the on the last row of the board return we have reached the end
@@ -369,11 +397,12 @@ public class ScrabbleRules {
             return;
         }
         //if there is no more tiles down return as we have reached the end of the word
-        if(board.readTileAt(p1.getRow()+1, p1.getCol()) == null){
+        if(board.readTileAt(p1.getRow()+1, p1.getCol()) == null &&
+                !currentMove.containsKey(new ScrabbleBoardPoint(p1.getRow()+1, p1.getCol()))){
             return;
         }
         //else finish building the word starting at the tile below
-        buildVerticalWord(word, new ScrabbleBoardPoint(p1.getRow()+1, p1.getCol()),board);
+        buildVerticalWord(word, new ScrabbleBoardPoint(p1.getRow()+1, p1.getCol()),board, currentMove);
     }
 
     /**
@@ -381,11 +410,12 @@ public class ScrabbleRules {
      */
     private ScrabbleBoardPoint getFirstVerticalP(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove,
                                                  ScrabbleBoardPoint p, ScrabbleBoard board) {
+        //System.out.println("firstverticalp");
         if (p.getRow() == 0) {
             return p;
         }
         if (board.readTileAt(p.getRow() - 1, p.getCol()) == null &&
-            currentMove.containsKey(new ScrabbleBoardPoint(p.getRow() - 1, p.getCol()))) {
+            !currentMove.containsKey(new ScrabbleBoardPoint(p.getRow() - 1, p.getCol()))) {
             return p;
         }
         return getFirstVerticalP(currentMove, new ScrabbleBoardPoint(p.getRow()-1, p.getCol()), board);
@@ -432,8 +462,7 @@ public class ScrabbleRules {
     private ArrayList<ScrabbleBoardPoint> getHorizontalWord(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove,ScrabbleBoardPoint p2, ScrabbleBoard board) {
         ArrayList<ScrabbleBoardPoint> word = new ArrayList<>();
         ScrabbleBoardPoint p1 = getFirstHorizontalP(currentMove,p2, board);
-        System.out.println(p1.getCol());
-        buildHorizontalWord(word, p1, board);
+        buildHorizontalWord(word, p1, board, currentMove);
         return word;
     }
 
@@ -444,7 +473,8 @@ public class ScrabbleRules {
      * @param board board to reference
      */
     private void buildHorizontalWord(ArrayList<ScrabbleBoardPoint> word,
-                                     ScrabbleBoardPoint p, ScrabbleBoard board) {
+                                     ScrabbleBoardPoint p, ScrabbleBoard board,
+                                     HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove) {
         //add the p to the word
         word.add(p);
         //if we get to the edge of the board the word is over
@@ -452,11 +482,12 @@ public class ScrabbleRules {
             return;
         }
         //if the next horizontal tile iss null the end of the word is found
-        if(board.readTileAt(p.getRow(),p.getCol()+1) == null){
+        if(board.readTileAt(p.getRow(),p.getCol()+1) == null &&
+                !currentMove.containsKey(new ScrabbleBoardPoint(p.getRow(),p.getCol()+1))){
             return;
         }
         //continue to build the word
-        buildHorizontalWord(word, new ScrabbleBoardPoint(p.getRow(),p.getCol()+1), board);
+        buildHorizontalWord(word, new ScrabbleBoardPoint(p.getRow(),p.getCol()+1), board,currentMove);
     }
 
     /**

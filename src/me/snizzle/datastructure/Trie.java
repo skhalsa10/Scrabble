@@ -28,7 +28,7 @@ public class Trie {
      */
     public void insert(String s){
         TrieNode current = root;
-        s.toLowerCase();
+        s = s.toLowerCase();
         for(int i = 0; i < s.length(); i++){
             //this calculates an index where a is 0 and z is 25
             int c = s.charAt(i)-'a';
@@ -50,7 +50,7 @@ public class Trie {
      */
     public boolean contains(String s){
         TrieNode current = root;
-        s.toLowerCase();
+        s = s.toLowerCase();
         for(int i = 0; i < s.length(); i++){
             int c = s.charAt(i)-'a';
             //if any of the nodes in the path are null the string is not in the Trie
@@ -76,7 +76,7 @@ public class Trie {
      */
     public boolean isPrefix(String prefix){
         TrieNode current = root;
-        prefix.toLowerCase();
+        prefix = prefix.toLowerCase();
         for(int i = 0; i < prefix.length(); i++){
             int c = prefix.charAt(i)-'a';
             //if any of the nodes in the path are null the prefix doesnt exist
