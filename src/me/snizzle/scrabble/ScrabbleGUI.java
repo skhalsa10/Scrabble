@@ -594,6 +594,8 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
             userMovedFailed = es.isUserMoveFailed();
             userTray = es.viewUserTray();
             board.placeTiles(es.getPlayedTiles());
+            playerScoreNum.setText(Integer.toString(es.getPlayerScore()));
+            compScoreNum.setText(Integer.toString(es.getCompScore()));
         }
     }
 }

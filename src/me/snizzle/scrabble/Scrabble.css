@@ -173,10 +173,10 @@
 
 #score-num{
     -fx-font-size: 25px;
-    -fx-text-fill: lightblue;
+    -fx-text-fill: #28ffed;
 }
 
 #score{
     -fx-font-size: 14px;
-    -fx-text-fill: lightblue;
+    -fx-text-fill: #28ffed;
 }

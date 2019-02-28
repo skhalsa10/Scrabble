@@ -12,6 +12,7 @@ public abstract class ScrabblePlayer {
     protected ScrabbleTileBag tileBag;
     protected ScrabbleBoard board;
     protected ScrabbleRules rules;
+    protected ScrabbleScore score;
 
     //this is used as a cached move that is being held for testing.
     protected HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove;
@@ -27,6 +28,7 @@ public abstract class ScrabblePlayer {
         this.rules = rules;
         this.board = board;
         this.tileBag = tileBag;
+        this.score = new ScrabbleScore();
         this.tileTray = new ScrabbleTileTray(tileBag);
     }
 
@@ -42,6 +44,7 @@ public abstract class ScrabblePlayer {
         this.rules = rules;
         this.board = board;
         this.tileBag = tileBag;
+        this.score = new ScrabbleScore();
         this.tileTray = new ScrabbleTileTray(trayFileName);
 
     }
@@ -98,6 +101,14 @@ public abstract class ScrabblePlayer {
      */
     public ScrabbleTile[] tileTrayToArray(){
         return tileTray.toArray();
+    }
+
+    /**
+     * this will return the player score
+     * @return the player score
+     */
+    public int getScore(){
+        return score.getScore();
     }
 
 

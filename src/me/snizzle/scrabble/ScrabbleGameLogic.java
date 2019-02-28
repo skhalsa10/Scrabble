@@ -16,7 +16,7 @@ public class ScrabbleGameLogic implements GameLogic {
     private ScrabblePlayer comp;
     private ScrabbleBoard board;
     private ScrabbleTileBag tileBag;
-    private ScrabbleWords words;
+    //private ScrabbleWords words;
     private ScrabbleRules rules;
     private ScrabbleExportState exportS;
 
@@ -29,7 +29,7 @@ public class ScrabbleGameLogic implements GameLogic {
         this.exportS = new ScrabbleExportState();
         this.tileBag = new ScrabbleTileBag();
         //TODO should I really have the words here? probably needs to be tucked into the rules
-        this.words = new ScrabbleWords("resources/enable.txt");
+        //this.words = new ScrabbleWords("resources/enable.txt");
         this.rules = new ScrabbleRules();
         this.board = new ScrabbleBoard(rules);
         this.player = new ScrabbleHumanPlayer(board,tileBag, rules);
@@ -48,6 +48,8 @@ public class ScrabbleGameLogic implements GameLogic {
         //I will update the exportS with the current tray and the new tiles played since last render
         exportS.exportUserTray(player.tileTrayToArray());
         exportS.setPlayedTiles(board.export());
+        exportS.setCompScore(comp.getScore());
+        exportS.setPlayerScore(player.getScore());
         exporter.exportState(exportS);
     }
 

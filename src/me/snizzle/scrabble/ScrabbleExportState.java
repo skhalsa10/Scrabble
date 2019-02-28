@@ -17,12 +17,16 @@ public class ScrabbleExportState implements LogicExportState {
     private boolean userMoveFailed;
     private HashMap<ScrabbleBoardPoint, ScrabbleTile> playedTiles;
     private ScrabbleTile[] userTrayState;
+    private int playerScore;
+    private int compScore;
     //TODO hint data?
-    //TODO score data
+
 
     public ScrabbleExportState(){
         userMoveFailed = false;
         playedTiles = new HashMap<>();
+        playerScore = 0;
+        compScore = 0;
     }
 
     //TODO if this does not reset anything els I should remove this.
@@ -84,5 +88,21 @@ public class ScrabbleExportState implements LogicExportState {
      */
     public HashMap<ScrabbleBoardPoint, ScrabbleTile> getPlayedTiles() {
         return playedTiles;
+    }
+
+    public int getPlayerScore() {
+        return playerScore;
+    }
+
+    public void setPlayerScore(int playerScore) {
+        this.playerScore = playerScore;
+    }
+
+    public int getCompScore() {
+        return compScore;
+    }
+
+    public void setCompScore(int compScore) {
+        this.compScore = compScore;
     }
 }
