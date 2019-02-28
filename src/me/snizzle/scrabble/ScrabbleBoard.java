@@ -86,7 +86,7 @@ public class ScrabbleBoard {
                    }else if (letter != '.'){
                        boardValues[r][c] = Integer.parseInt(String.valueOf(letter));
                    }else{
-                       boardValues[r][c] = 0;
+                       boardValues[r][c] = 1;
                    }
                 }
 
@@ -191,5 +191,21 @@ public class ScrabbleBoard {
             }
         }
         return temp;
+    }
+
+
+    /**
+     * will check the value at  boardValues[row][col] if it is divisible by the value of 'w'(i think this is 119)
+     * then it is a word multiplier. I add the value of 'w' when I read in the board to represent it being a word multiplier.
+     *
+     * @param row
+     * @param col
+     * @return true if it is a word multiplier location at row and col and false otherwise
+     */
+    public boolean valueIsWordMultAt(int row, int col) {
+        if(boardValues[row][col] / 'w' != 0){
+            return true;
+        }
+        return false;
     }
 }

@@ -12,10 +12,9 @@ import java.util.Set;
 public class ComputerPlayerTest {
 
     public static void main(String args[]){
-        Trie words =  new Trie();
-        words.insert("Hello");
-        words.insert("Hello");
 
+        System.out.println(0+'w' +'w');
+        System.out.println((9+'w'+'w')%'w');
 
 
     }

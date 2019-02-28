@@ -1,6 +1,6 @@
 package me.snizzle.scrabble;
 
-import javafx.scene.control.skin.TextInputControlSkin;
+
 
 import java.util.*;
 
@@ -176,14 +176,18 @@ public class ScrabbleRules {
             return false;
         }
 
+        //lets get the main direction of the word
         Direction currentDirection = calcDirection(currentMove.keySet());
+
         //diagnal moves are illegal return false
         if (currentDirection == Direction.DIAG || currentDirection == Direction.ERROR){
             return false;
         }
 
+        //get set of of words represented by points
         HashSet<ArrayList<ScrabbleBoardPoint>> wordPoints = getWordPointsSet(currentMove, board, currentDirection);
 
+        //make sure all the words are actual words in the dictionary
         if(!wordsInDictionary(wordPoints, board, currentMove)){
             return false;
         }
@@ -191,6 +195,99 @@ public class ScrabbleRules {
         return true;
     }
 
+    /**
+     * this will assume the currentMove is valid and calculate the total score.
+     * @param currentMove valid move to calculate score
+     * @param board board to reference to calculate against
+     * @return int representing the score.
+     */
+    public int calcScore(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove, ScrabbleBoard board){
+        //TODO need to fix this method to take into account the following:
+        // TODO Letter and word premiums count only on the turn in which they are played. On later
+        //TODO turns, letters already played on premium squares count at face value.
+        int total = 0;
+        boolean isBingo = false;
+
+        //if all 7 tiles are played we have a bingo
+        if(currentMove.keySet().size() ==7){
+            isBingo = true;
+        }
+
+        //convert to set of words represented by a list of points
+        HashSet<ArrayList<ScrabbleBoardPoint>> words =
+                getWordPointsSet(currentMove, board, calcDirection(currentMove.keySet()));
+
+        //for each word add the score to the total
+        for (ArrayList<ScrabbleBoardPoint> word: words ) {
+            total += calcWordScore(currentMove, word, board);
+        }
+
+        if(isBingo){
+            total += 50;
+        }
+
+        return total;
+    }
+
+    /**
+     * given a word represented as points calculate the total score and return it
+     * @param word word of points to calculate
+     * @param board board to reference
+     * @return total score of the word
+     */
+    private int calcWordScore(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove,
+                              ArrayList<ScrabbleBoardPoint> word, ScrabbleBoard board){
+        int total = 0;
+        ArrayList<ScrabbleBoardPoint> wordMultipliers = new ArrayList<>();
+        //add up the letters and keeptrack of the word multipliers for later
+        for (ScrabbleBoardPoint p:word) {
+            //if the point references a word multiplier only add the value of the
+            // tile add the point to wordMultipliers for later calculation
+            if(board.valueIsWordMultAt(p.getRow(),p.getCol())){
+                wordMultipliers.add(p);
+                //if the point references a tile on the board add the tile value
+                if(board.readTileAt(p.getRow(),p.getCol()) != null){
+                    total += board.readTileAt(p.getRow(),p.getCol()).getPoints();
+                }
+                //the point better be in the current move if not on the board ... or we afre in trouble.
+                else if(currentMove.containsKey(p)){
+                    total += currentMove.get(p).getPoints();
+                }
+                else{
+                    System.out.println("error in calcWordScore()");
+                }
+                //we are done with this iteration lets continue to the next
+                continue;
+            }
+            //lets finish up this by assuming that it is not a word multiplier
+            //if the tile is on the board add the points multiplied by the board value.
+            if(board.readTileAt(p.getRow(),p.getCol())!= null){
+                total += board.readTileAt(p.getRow(),p.getCol()).getPoints() *
+                        board.getBoardValueAt(p.getRow(),p.getCol());
+            }
+            //if tile is not yet on the board it should be in the currentMove
+            else if(currentMove.containsKey(p)){
+                total += currentMove.get(p).getPoints() *
+                        board.getBoardValueAt(p.getRow(),p.getCol());
+            }
+            //if it is not there we are screwed an error happened
+            else{
+                System.out.println("Error again in calcWordScore()");
+            }
+        }
+        //now lets multiply the word  by the word multipliers :) chaching!
+        for (ScrabbleBoardPoint p: wordMultipliers ) {
+            total *= (board.getBoardValueAt(p.getRow(),p.getCol())%'w');
+        }
+
+        return total;
+    }
+
+
+    /**
+     * prints the currentMove mostly for debugging
+     * @param currentMove
+     */
     private void printCurrentMove(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove) {
         for (ScrabbleBoardPoint p: currentMove.keySet() ) {
             System.out.println("r: " + p.getRow() + " c: " + p.getCol() + " -> " + currentMove.get(p).readTile());
@@ -219,7 +316,7 @@ public class ScrabbleRules {
     }
 
     /**
-     * takes a hashet oof a list of points representing words and returns a list of those words as strings
+     * takes a hashset of a list of points representing words and returns a list of those words as strings
      * @param wordPoints
      * @param board
      * @return
@@ -251,7 +348,7 @@ public class ScrabbleRules {
     }
 
     /**
-     * this method willreturn a hash set of an ArrayListof scrabble points representing words created from the current move
+     * this method will return a hash set of an ArrayList of scrabble points representing words created from the current move
      * @param currentMove the current move used to figure out moves from
      * @param board the board to check the current move against.
      * @param direction the direction of all tiles

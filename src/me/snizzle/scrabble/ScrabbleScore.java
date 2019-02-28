@@ -1,5 +1,7 @@
 package me.snizzle.scrabble;
 
+import java.util.HashMap;
+
 /**
  * this is a small class that keeps track of a score. Very Basic may not even need to be a class
  *
@@ -22,9 +24,15 @@ public class ScrabbleScore {
         this.score = score;
     }
     /**
-     * if given a rules object and a board we can even calculate the score
+     * if given a rules object and a board  and current move we can even calculate the score
      */
-    public void calcScore( ScrabbleRules rules, ScrabbleBoard board){
-        //TODO call the calculate score in rules
+    public int calcScore(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove,
+                         ScrabbleRules rules, ScrabbleBoard board){
+        return rules.calcScore(currentMove, board);
+    }
+
+    public void calcAndAddScore(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove,
+                                ScrabbleRules rules, ScrabbleBoard board){
+        score += rules.calcScore(currentMove, board);
     }
 }
