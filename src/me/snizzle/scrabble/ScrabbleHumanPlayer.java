@@ -21,7 +21,7 @@ public class ScrabbleHumanPlayer extends ScrabblePlayer{
             return false;
         }
 
-        System.out.println(rules.calcScore(currentMove,board));
+        score.addToScore(rules.calcScore(currentMove,board));
 
         if(!approveMove()){
             return false;

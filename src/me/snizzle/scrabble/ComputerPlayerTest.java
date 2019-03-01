@@ -13,8 +13,8 @@ public class ComputerPlayerTest {
 
     public static void main(String args[]){
 
-        System.out.println(0+'w' +'w');
-        System.out.println((9+'w'+'w')%'w');
+        System.out.println("a -> " + (0+'a'));
+        System.out.println("z -> " + (0+'z'));
 
 
     }

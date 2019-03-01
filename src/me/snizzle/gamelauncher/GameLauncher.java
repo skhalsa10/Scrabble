@@ -81,14 +81,16 @@ public class GameLauncher extends Application {
     private void launchScrabble() {
         Stage scrabbleStage = new Stage();
         disableButtons();
+        game = GameFactory.getGame(GameType.SCRABBLE, scrabbleStage);
         scrabbleStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             @Override
             public void handle(WindowEvent event) {
                 enableButtons();
+                //game.end TODO
             }
         });
 
-        game = GameFactory.getGame(GameType.SCRABBLE, scrabbleStage);
+
         game.play();
 
         scrabbleStage.show();

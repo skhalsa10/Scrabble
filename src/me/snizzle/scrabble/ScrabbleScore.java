@@ -20,9 +20,6 @@ public class ScrabbleScore {
         return score;
     }
 
-    public void setScore(int score) {
-        this.score = score;
-    }
     /**
      * if given a rules object and a board  and current move we can even calculate the score
      */
@@ -34,5 +31,9 @@ public class ScrabbleScore {
     public void calcAndAddScore(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove,
                                 ScrabbleRules rules, ScrabbleBoard board){
         score += rules.calcScore(currentMove, board);
+    }
+
+    public void addToScore(int s) {
+        this.score += s;
     }
 }

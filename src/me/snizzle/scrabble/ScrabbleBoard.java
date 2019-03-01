@@ -19,7 +19,9 @@ public class ScrabbleBoard {
     private ScrabbleTile[][] boardTiles;
     private int boardSize;
     private ScrabbleRules rules;
+    private ArrayList<ScrabbleBoardPoint> playedBlanks;
     HashMap<ScrabbleBoardPoint, ScrabbleTile> cachedMove;
+
 
     /**
      * constructs the default board
@@ -34,6 +36,7 @@ public class ScrabbleBoard {
      */
     public ScrabbleBoard(String boardConfig, ScrabbleRules rules){
         this.rules = rules;
+        playedBlanks = new ArrayList<>();
         BufferedReader fileReader = null;
         try {
             fileReader = new BufferedReader(new FileReader(boardConfig));

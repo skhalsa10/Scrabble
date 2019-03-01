@@ -1,17 +1,22 @@
 package me.snizzle.scrabble;
 
+import javafx.beans.binding.Binding;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import me.snizzle.game.LogicExportState;
@@ -20,6 +25,7 @@ import me.snizzle.game.Renderable;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Optional;
 
 
 /**
@@ -62,6 +68,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     private HashMap<ScrabbleBoardPoint,ScrabbleTile> cachedMove;
     private ScrabbleTile cachedSelection;
     private ScrabbleImportState importState;
+    private boolean selectedIsBlank;
 
 
     /**
@@ -78,6 +85,8 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         importerReady = false;
         newTurn = true;
         importState = new ScrabbleImportState();
+        waitingForInput = false;
+        selectedIsBlank = false;
 
         //set up jfx stuff
         this.gameStage = gameStage;
@@ -255,11 +264,63 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
             trayGridStackRef[index].getChildren().get(trayGridStackRef[index].getChildren().size()-2).setId("tile-letter-text-selected");
             trayGridStackRef[index].getChildren().get(trayGridStackRef[index].getChildren().size()-1).setId("tile-points-text-selected");
             cachedSelection = userTray[index];
+            //lets try handling the blank here
+            if(userTray[index].readTile() == ' '){
+                selectedIsBlank = true;
+                char c = getBlankChar();
+            }
+            cachedSelection = userTray[index];
             userTray[index] = null;
 
         }
 
     }
+
+    /**
+     * lets hope this works  this will hopeful make a pop up dialogbox that
+     * collects the char from the user to be used on the blank tile
+     * @return letter for  blank tile
+     */
+    private char getBlankChar() {
+
+        TextInputDialog dialog = new TextInputDialog("c");
+
+        //set up styling
+        dialog.getDialogPane().getStylesheets().add(
+                getClass().getResource("Scrabble.css").toExternalForm());
+        ((Button) dialog.getDialogPane().lookupButton(ButtonType.OK)).getStyleClass().add("play-button");
+        ((Button) dialog.getDialogPane().lookupButton(ButtonType.CANCEL)).getStyleClass().add("reset-button");
+
+
+        dialog.setTitle("Blank for Letter");
+        dialog.setHeaderText("Please enter a LOWERCASE Letter to \nbe used on the Blank tile: ");
+        dialog.setContentText("Letter: ");
+        Button ok = (Button)dialog.getDialogPane().lookupButton(ButtonType.OK);
+        TextField textInput = dialog.getEditor();
+        //textInput.onInputMethodTextChangedProperty()
+        textInput.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                updateOK(ok, newValue);
+            }
+
+            private void updateOK(Button ok, String text) {
+                if(text.length() ==1 && text.charAt(0) >= 97 && text.charAt(0) <= 122){
+                    ok.setDisable(false);
+                }
+                else{
+                    ok.setDisable(true);
+                }
+            }
+        });
+        Optional<String> input = dialog.showAndWait();
+        System.out.println(textInput.getText());
+        //input.ifPresent(letter -> {c = letter.charAt(0);});
+        return textInput.getText().charAt(0);
+
+
+    }
+
 
     /**
      * this will initialize the board to the default with no tiles in it
