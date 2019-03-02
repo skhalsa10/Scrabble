@@ -13,7 +13,8 @@ import java.util.HashMap;
  */
 public class ScrabbleImportState implements LogicImportState {
     private HashMap<ScrabbleBoardPoint, ScrabbleTile> move;
-    private ArrayList<ScrabbleTile> blankConversions;
+    private ArrayList<ScrabbleBoardPoint> blankPoints;
+
 
     public ScrabbleImportState(){
         move = new HashMap<>();
@@ -25,5 +26,13 @@ public class ScrabbleImportState implements LogicImportState {
 
     public HashMap<ScrabbleBoardPoint, ScrabbleTile> getMove() {
         return move;
+    }
+
+    public void setBlankPoints(ArrayList<ScrabbleBoardPoint> blankPoints) {
+        this.blankPoints = blankPoints;
+    }
+
+    public ArrayList<ScrabbleBoardPoint> getBlankPoints() {
+        return blankPoints;
     }
 }

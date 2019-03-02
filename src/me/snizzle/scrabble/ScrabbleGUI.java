@@ -23,6 +23,7 @@ import me.snizzle.game.LogicExportState;
 import me.snizzle.game.LogicImportState;
 import me.snizzle.game.Renderable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Optional;
@@ -69,6 +70,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     private ScrabbleTile cachedSelection;
     private ScrabbleImportState importState;
     private boolean selectedIsBlank;
+    private ArrayList<ScrabbleBoardPoint> blankPoints;
 
 
     /**
@@ -85,8 +87,8 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         importerReady = false;
         newTurn = true;
         importState = new ScrabbleImportState();
-        waitingForInput = false;
         selectedIsBlank = false;
+        blankPoints = new ArrayList<>();
 
         //set up jfx stuff
         this.gameStage = gameStage;
@@ -120,6 +122,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         playMove.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
+                System.out.println("play pressed");
                 playMoveHandler();
             }
         });
@@ -180,7 +183,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     }
 
     private void playMoveHandler() {
-        //System.out.println("we wilhandle the play button one day");
+        System.out.println("we wilhandle the play button one day");
         importerReady  = true;
     }
 
@@ -188,6 +191,23 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
      * this will undo the current cached move. delete  rendered tile on the board and put it back into the tray
      */
     private void resetCachedMove() {
+
+        //if the cachedselection still exists
+        if(selectedIsBlank){
+            cachedSelection = new ScrabbleTile(' ', 0);
+            selectedIsBlank = false;
+        }
+        //lets first set the the blank points in the cached move back to having blank tiles
+        for (ScrabbleBoardPoint p: blankPoints  ) {
+            //cachedMove.remove(p);
+            if(cachedMove.containsKey(p)){
+                cachedMove.put(p,new ScrabbleTile(' ',0));
+            }else{
+                System.out.println("error in resetCachedMove()");
+            }
+
+        }
+        blankPoints.clear();
 
 
         Iterator cachedIterator = cachedMove.keySet().iterator();
@@ -263,11 +283,13 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         if(cachedSelection == null) {
             trayGridStackRef[index].getChildren().get(trayGridStackRef[index].getChildren().size()-2).setId("tile-letter-text-selected");
             trayGridStackRef[index].getChildren().get(trayGridStackRef[index].getChildren().size()-1).setId("tile-points-text-selected");
-            cachedSelection = userTray[index];
+            //cachedSelection = userTray[index];
             //lets try handling the blank here
             if(userTray[index].readTile() == ' '){
                 selectedIsBlank = true;
                 char c = getBlankChar();
+                userTray[index] = null;
+                userTray[index] = new ScrabbleTile(c,0);
             }
             cachedSelection = userTray[index];
             userTray[index] = null;
@@ -361,13 +383,19 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
      * @param col
      */
     private void selectBoardPoint(int row, int col) {
+        //there is already a tile on this point. refuse it
         if(board.readTileAt(row,col) != null){return;}
+        //there is already a tile in the cached move dedicated for this spot
         if(cachedMove.containsKey(new ScrabbleBoardPoint(row,col))){
             return;
         }
         if(cachedSelection != null){
             cachedMove.put(new ScrabbleBoardPoint(row,col), cachedSelection);
             cachedSelection = null;
+            if(selectedIsBlank) {
+                selectedIsBlank = false;
+                blankPoints.add(new ScrabbleBoardPoint(row, col));
+            }
         }
         //System.out.println(cachedMove.size());
         renderTrayState();
@@ -631,7 +659,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
      */
     @Override
     public boolean timeToFetchData() {
-
+        //System.out.println("timetofetchdata called and returned: " +importerReady);
         return importerReady;
     }
 
@@ -639,6 +667,8 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     public LogicImportState fetch() {
         importState.setMove(cachedMove);
         cachedMove = new HashMap<>();
+        importState.setBlankPoints(blankPoints);
+        blankPoints = new ArrayList<>();
         importerReady = false;
         newTurn = true;
         return importState;

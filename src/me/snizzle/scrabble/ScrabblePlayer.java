@@ -13,9 +13,12 @@ public abstract class ScrabblePlayer {
     protected ScrabbleBoard board;
     protected ScrabbleRules rules;
     protected ScrabbleScore score;
+    protected ArrayList<ScrabbleBoardPoint> blankPoints;
 
     //this is used as a cached move that is being held for testing.
     protected HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove;
+
+
 
 
     /**
@@ -63,7 +66,10 @@ public abstract class ScrabblePlayer {
      * @return
      */
     public boolean checkCachedMoveValid(){
-        if(!tileTray.contains(new ArrayList<>(currentMove.values()))){
+        //this no longer works now that I added blanks because they do not exist in the tray. i need to feed it with blanks
+        //if(!tileTray.contains(new ArrayList<>(currentMove.values()))){
+        //System.out.println(tileTray.contains(getCurrentMoveValuesAsBlanks()));
+        if(!tileTray.contains(getCurrentMoveValuesWithBlanks())){
             return false;
         }
         if (!rules.isMoveValid(currentMove, board)){
@@ -76,14 +82,27 @@ public abstract class ScrabblePlayer {
         return true;
     }
 
+    private ArrayList<ScrabbleTile> getCurrentMoveValuesWithBlanks() {
+        ArrayList<ScrabbleTile> temp = new ArrayList<>();
+        for (ScrabbleBoardPoint p:currentMove.keySet()) {
+            if(blankPoints.contains(p)){
+                temp.add(new ScrabbleTile(' ', 0));
+            }
+            else{
+                temp.add(currentMove.get(p));
+            }
+        }
+        return temp;
+    }
+
     /**
      * this will assume the move is valid remove the tiles from the tray
      * and plays them on the board. It will also delete the reset currentMove to null.
      * @return true on success
      */
     public boolean approveMove(){
-        //TODO should I checkCachedMovevalid here?
-        if(!tileTray.remove(new ArrayList<>(currentMove.values()))){
+
+        if(!tileTray.remove(new ArrayList<>(getCurrentMoveValuesWithBlanks()))){
             return false;
         }
         if(!board.placeTiles(currentMove)){
@@ -112,4 +131,7 @@ public abstract class ScrabblePlayer {
     }
 
 
+    public void setBlankPoints(ArrayList<ScrabbleBoardPoint> blankPoints) {
+        this.blankPoints = blankPoints;
+    }
 }

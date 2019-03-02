@@ -18,7 +18,8 @@ public class ScrabbleTile implements Cloneable{
      * @param value the point value associated with the letter
      */
     public ScrabbleTile(char letter, int value){
-        this.letter = letter;
+
+        this.letter = Character.toUpperCase(letter);
         this.points = value;
     }
 
