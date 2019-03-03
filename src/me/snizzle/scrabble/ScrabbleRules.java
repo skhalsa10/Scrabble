@@ -440,24 +440,38 @@ public class ScrabbleRules {
      */
     private boolean isHorizontalWordEnd(ScrabbleBoardPoint p, ScrabbleBoard board) {
         //if on left edge
-        if (p.getCol() == 0 && board.readTileAt(p.getRow(), p.getCol() + 1) != null) {
-            return true;
+        if (p.getCol() == 0 ) {
+            //if the point is not null and the point to the right is not null then we have an end
+            if(board.readTileAt(p.getRow(), p.getCol()) != null &&
+                    board.readTileAt(p.getRow(), p.getCol() + 1) != null) {
+                return true;
+            }else {
+                return false;
+            }
         }
+        //checking if it is a right edge
+        if(p.getCol() == board.getBoardSize()-1){
+            if(board.readTileAt(p.getRow(),p.getCol()) != null &&
+                    board.readTileAt(p.getRow(),p.getCol()-1) != null) {
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+
         //if left end
         if (board.readTileAt(p.getRow(), p.getCol() - 1) == null &&
-                p.getCol() != board.getBoardSize()-1 &&
+                board.readTileAt(p.getRow(), p.getCol()) != null &&
                 board.readTileAt(p.getRow(), p.getCol() + 1) != null){
 
             return true;
         }
-        //checking if it is a right end
-        //on the edge
-        if(p.getCol() == board.getBoardSize()-1 && board.readTileAt(p.getRow(),p.getCol()-1) != null){
-            return true;
-        }
+
         //not on edge
         if(board.readTileAt(p.getRow(),p.getCol() +1) ==null &&
-                p.getCol() != 0 && board.readTileAt(p.getRow(),p.getCol()-1) != null){
+                board.readTileAt(p.getRow(),p.getCol()) != null &&
+                board.readTileAt(p.getRow(),p.getCol()-1) != null){
             return true;
         }
 
