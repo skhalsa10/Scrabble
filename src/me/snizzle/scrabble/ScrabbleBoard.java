@@ -48,7 +48,6 @@ public class ScrabbleBoard {
             String line = fileReader.readLine();
             boardSize = Integer.parseInt(line);
 
-
             boardValues = new int[boardSize][boardSize];
             boardTiles = new ScrabbleTile[boardSize][boardSize];
 
@@ -75,6 +74,7 @@ public class ScrabbleBoard {
             String line = fileReader.readLine();
             boardSize = Integer.parseInt(line);
 
+            System.out.println(boardSize);
 
             boardValues = new int[boardSize][boardSize];
             boardTiles = new ScrabbleTile[boardSize][boardSize];
@@ -269,10 +269,8 @@ public class ScrabbleBoard {
                         line.append(" ");
                     }
                 }
-                c++;
             }
             System.out.println(line.toString());
-            r++;
         }
     }
 }

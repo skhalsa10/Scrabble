@@ -311,9 +311,10 @@ public class ScrabbleRules {
         for (String word: wordsAsStrings ) {
             //System.out.println(word);
             if(!dictionary.verify(word)){
-                //System.out.println(word + " is not a word");
+                System.out.println(word + " is not a word");
                 return false;
             }
+            System.out.println(word + " is a word!!!");
         }
 
         return true;

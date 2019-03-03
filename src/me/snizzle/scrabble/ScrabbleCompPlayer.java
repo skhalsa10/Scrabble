@@ -35,7 +35,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         if(!checkCachedMoveValid()){
             return false;
         }
-
+        System.out.println("computer move passed the chace check");
         //commit the move to the board
         if(!approveMove()){
             return false;
