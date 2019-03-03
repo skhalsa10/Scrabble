@@ -117,4 +117,17 @@ public class ScrabbleTileTray {
 
         return tray.toArray(new ScrabbleTile[]{});
     }
+
+    /**
+     *
+     * @return a deep copy of the tray as an array list.
+     */
+    public ArrayList<ScrabbleTile> getCopy() {
+        ArrayList<ScrabbleTile> temp = new ArrayList<>();
+        for (ScrabbleTile tile: tray ) {
+            temp.add(new ScrabbleTile(tile.readTile(),tile.getPoints()));
+        }
+
+        return temp;
+    }
 }

@@ -84,7 +84,7 @@ public class ScrabbleGameLogic implements GameLogic {
         }
         //process the computer if it is not the users turn
         if (!isPlayerTurn) {
-            comp.takeTurn();
+            //comp.takeTurn();
             isPlayerTurn = true;
         }
 

@@ -157,26 +157,26 @@ public class ScrabbleRules {
      */
     public boolean isMoveValid(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove, ScrabbleBoard board) {
 
-        printCurrentMove(currentMove);
+        //printCurrentMove(currentMove);
 
         //lets first confirm that none of of the points already have tiles on the board.
         for (ScrabbleBoardPoint p: currentMove.keySet()) {
             //if there is a tile on the board already then this is an illegal move return false
            if(board.readTileAt(p.getRow(),p.getCol()) != null){return false;}
         }
-        System.out.println("pass 1");
+        //System.out.println("pass 1");
         //if first move must be in the middle and have at least two tiles
         if(isFirstMove(board)){
             if(!isFirstMoveLegal(currentMove.keySet(), board.getBoardSize())){
                 return false;
             }
         }
-        System.out.println("pass 2");
+        //System.out.println("pass 2");
         //must touch an already played tile
         if(!currentMoveTouchesTile(currentMove.keySet(),board)){
             return false;
         }
-        System.out.println("pass 3");
+        //System.out.println("pass 3");
 
         //lets get the main direction of the word
         Direction currentDirection = calcDirection(currentMove.keySet());
@@ -185,7 +185,7 @@ public class ScrabbleRules {
         if (currentDirection == Direction.DIAG || currentDirection == Direction.ERROR){
             return false;
         }
-        System.out.println("pass 4");
+        //System.out.println("pass 4");
 
         //get set of of words represented by points
         HashSet<ArrayList<ScrabbleBoardPoint>> wordPoints = getWordPointsSet(currentMove, board, currentDirection);
@@ -195,7 +195,7 @@ public class ScrabbleRules {
             return false;
         }
 
-        System.out.println("pass 5");
+        //System.out.println("pass 5");
         return true;
     }
 
@@ -311,7 +311,7 @@ public class ScrabbleRules {
         for (String word: wordsAsStrings ) {
             //System.out.println(word);
             if(!dictionary.verify(word)){
-                System.out.println(word + " is not a word");
+                //System.out.println(word + " is not a word");
                 return false;
             }
         }
@@ -661,7 +661,7 @@ public class ScrabbleRules {
                 return true;
             }
             //check right side
-            if(p.getCol()+1 <=board.getBoardSize() && board.readTileAt(p.getRow(),p.getCol()+1) != null){
+            if(p.getCol()+1 < board.getBoardSize() && board.readTileAt(p.getRow(),p.getCol()+1) != null){
                 return true;
             }
             //check top side
@@ -669,7 +669,7 @@ public class ScrabbleRules {
                 return true;
             }
             //check bottom side
-            if(p.getRow()+1 <= board.getBoardSize() && board.readTileAt(p.getRow()+1,p.getCol()) != null){
+            if(p.getRow()+1 < board.getBoardSize() && board.readTileAt(p.getRow()+1,p.getCol()) != null){
                 return true;
             }
 

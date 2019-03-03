@@ -122,7 +122,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         playMove.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("play pressed");
+                //System.out.println("play pressed");
                 playMoveHandler();
             }
         });
@@ -183,7 +183,10 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
     }
 
     private void playMoveHandler() {
-        System.out.println("we wilhandle the play button one day");
+        //System.out.println("we wilhandle the play button one day");
+        //TODO do i need to check if this cached selection is there and
+        // TODO put it back in the tray? i dont think so since I am dealing with copies
+        cachedSelection = null;
         importerReady  = true;
     }
 

@@ -13,8 +13,15 @@ public class ComputerPlayerTest {
 
     public static void main(String args[]){
 
-        System.out.println("a -> " + (0+'a'));
-        System.out.println("z -> " + (0+'z'));
+        HashMap<ScrabbleBoardPoint, ScrabbleTile> test = new HashMap<>();
+        HashMap<ScrabbleBoardPoint, ScrabbleTile> test2 = new HashMap<>();
+        test2.put(new ScrabbleBoardPoint(0,0), new ScrabbleTile('c',0));
+        test2.put(new ScrabbleBoardPoint(0,1), new ScrabbleTile('k',1));
+
+        test.putAll(test2);
+
+        System.out.println(test.containsKey(new ScrabbleBoardPoint(0,0)));
+        System.out.println(test.containsValue(new ScrabbleTile('k',1)));
 
 
     }
