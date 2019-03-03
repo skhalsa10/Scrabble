@@ -3,6 +3,10 @@ package me.snizzle.scrabble;
 
 import me.snizzle.datastructure.Trie;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -13,15 +17,26 @@ public class ComputerPlayerTest {
 
     public static void main(String args[]){
 
-        HashMap<ScrabbleBoardPoint, ScrabbleTile> test = new HashMap<>();
-        HashMap<ScrabbleBoardPoint, ScrabbleTile> test2 = new HashMap<>();
-        test2.put(new ScrabbleBoardPoint(0,0), new ScrabbleTile('c',0));
-        test2.put(new ScrabbleBoardPoint(0,1), new ScrabbleTile('k',1));
+        BufferedReader fileReader = null;
+        try {
+            fileReader = new BufferedReader(new FileReader("resources/test1"));
 
-        test.putAll(test2);
 
-        System.out.println(test.containsKey(new ScrabbleBoardPoint(0,0)));
-        System.out.println(test.containsValue(new ScrabbleTile('k',1)));
+            ScrabblePlayer comp;
+            ScrabbleTileBag tileBag = new ScrabbleTileBag();
+            ScrabbleRules rules = new ScrabbleRules();
+            ScrabbleBoard board = new ScrabbleBoard(fileReader, rules);
+            String trayRep = fileReader.readLine();
+            board.printBoard();
+            //System.out.println(trayRep);
+            comp = new ScrabbleCompPlayer(board,tileBag,trayRep,rules);
+            comp.takeTurn();
+            board.printBoard();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
 
 
     }

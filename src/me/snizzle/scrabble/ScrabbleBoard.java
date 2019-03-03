@@ -32,7 +32,7 @@ public class ScrabbleBoard {
 
     /**
      * this will construct a board based on the configs in the file
-     * @param boardConfig
+     * @param boardConfig the file to the board config
      */
     public ScrabbleBoard(String boardConfig, ScrabbleRules rules){
         this.rules = rules;
@@ -47,15 +47,44 @@ public class ScrabbleBoard {
         try {
             String line = fileReader.readLine();
             boardSize = Integer.parseInt(line);
+
+
+            boardValues = new int[boardSize][boardSize];
+            boardTiles = new ScrabbleTile[boardSize][boardSize];
+
+
+            configureBoard(fileReader);
+            fileReader.close();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
-        boardValues = new int[boardSize][boardSize];
-        boardTiles = new ScrabbleTile[boardSize][boardSize];
+    /**
+     * this is similar to the constructor that takes a string name representing a file location. this one takes a fileReader
+     * and it assumes that the next line read in is the number representing the board size. it will also not worry about closing the file
+     * @param fileReader this
+     * @param rules
+     */
+    public ScrabbleBoard(BufferedReader fileReader, ScrabbleRules rules){
+        this.rules = rules;
+        playedBlanks = new ArrayList<>();
+
+        try {
+            String line = fileReader.readLine();
+            boardSize = Integer.parseInt(line);
 
 
-        configureBoard(fileReader);
+            boardValues = new int[boardSize][boardSize];
+            boardTiles = new ScrabbleTile[boardSize][boardSize];
+
+
+            configureBoard(fileReader);
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /**
@@ -76,35 +105,34 @@ public class ScrabbleBoard {
 
         //initialize the board values
         try {
-            while ((line = fileReader.readLine()) != null) {
-                String[] parsed = line.split(" ");
+            for (int i = 0; i < boardSize; i++) {
+                line = fileReader.readLine();
 
-                if(parsed.length != boardSize){throw new IOException();}
+                //if(parsed.length != boardSize){throw new IOException();}
 
-                for(c = 0; c< parsed.length;c++){
-                   char word  = parsed[c].charAt(0);
-                   char letter = parsed[c].charAt(1);
-                   if(word != '.'){
-                       boardValues[r][c] = Integer.parseInt(String.valueOf(word))+'w';
-                   }else if (letter != '.'){
-                       boardValues[r][c] = Integer.parseInt(String.valueOf(letter));
-                   }else{
-                       boardValues[r][c] = 1;
-                   }
+                for(c = 0; c< boardSize;c++) {
+
+                    char word = line.charAt(c*3);
+                    char letter = line.charAt((c*3)+1);
+                    if(word == ' '){
+                        boardTiles[r][c] = new ScrabbleTile(letter, rules.standardCharPoints(letter));
+                    }
+                    else if (word != '.') {
+                        boardValues[r][c] = Integer.parseInt(String.valueOf(word)) + 'w';
+                    } else if (letter != '.') {
+                        boardValues[r][c] = Integer.parseInt(String.valueOf(letter));
+                    } else {
+                        boardValues[r][c] = 1;
+                    }
                 }
 
                 r++;
             }
 
-            fileReader.close();
-
         }catch(IOException e){
             System.out.println("boardSize does not match length of split.");
             e.printStackTrace();
         }
-
-
-
     }
 
     /**
@@ -166,6 +194,10 @@ public class ScrabbleBoard {
 
     }
 
+    /**
+     *
+     * @return the size of the board. the board should be square so this is the height and width
+     */
     public int getBoardSize() {
         return boardSize;
     }
@@ -208,5 +240,39 @@ public class ScrabbleBoard {
             return true;
         }
         return false;
+    }
+
+    /**
+     * prints a representation of the current board out
+     */
+    public void printBoard(){
+        for (int r = 0; r < boardSize; r++) {
+            StringBuilder line = new StringBuilder();
+            for (int c = 0; c < boardSize; c++) {
+                if(boardTiles[r][c] != null){
+                    line.append(" ");
+                    line.append(boardTiles[r][c].readTile());
+                    line.append(" ");
+                }else{
+                    int val = boardValues[r][c];
+                    if(val == 1){
+                        line.append(".. ");
+                    }
+                    else if(val/'w'==0){
+                        line.append(".");
+                        line.append(val);
+                        line.append(" ");
+                    }
+                    else{
+                        line.append(val%'w');
+                        line.append(".");
+                        line.append(" ");
+                    }
+                }
+                c++;
+            }
+            System.out.println(line.toString());
+            r++;
+        }
     }
 }

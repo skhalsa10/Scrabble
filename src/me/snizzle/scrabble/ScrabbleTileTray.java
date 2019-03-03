@@ -65,6 +65,7 @@ public class ScrabbleTileTray {
         for(int i = 0; i < 7; i++){
             tray.add(new ScrabbleTile(trayString.charAt(i),rules.standardCharPoints(trayString.charAt(i))));
         }
+        rules = null;
     }
 
     /**

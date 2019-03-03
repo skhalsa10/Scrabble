@@ -33,6 +33,7 @@ public abstract class ScrabblePlayer {
         this.tileBag = tileBag;
         this.score = new ScrabbleScore();
         this.tileTray = new ScrabbleTileTray(tileBag);
+        this.blankPoints = new ArrayList<>();
     }
 
     /**
@@ -40,15 +41,16 @@ public abstract class ScrabblePlayer {
      * it needs to be able to parse a file to set up the state.
      * @param board
      * @param tileBag
-     * @param trayFileName
+     * @param trayAsString
      * @param rules
      */
-    public ScrabblePlayer(ScrabbleBoard board, ScrabbleTileBag tileBag, String trayFileName, ScrabbleRules rules){
+    public ScrabblePlayer(ScrabbleBoard board, ScrabbleTileBag tileBag, String trayAsString, ScrabbleRules rules){
         this.rules = rules;
         this.board = board;
         this.tileBag = tileBag;
         this.score = new ScrabbleScore();
-        this.tileTray = new ScrabbleTileTray(trayFileName);
+        this.tileTray = new ScrabbleTileTray(trayAsString);
+        this.blankPoints = new ArrayList<>();
 
     }
 
@@ -81,9 +83,10 @@ public abstract class ScrabblePlayer {
     }
 
     private ArrayList<ScrabbleTile> getCurrentMoveValuesWithBlanks() {
+
         ArrayList<ScrabbleTile> temp = new ArrayList<>();
         for (ScrabbleBoardPoint p:currentMove.keySet()) {
-            if(blankPoints.contains(p)){
+            if(blankPoints != null &&blankPoints.contains(p)){
                 temp.add(new ScrabbleTile(' ', 0));
             }
             else{

@@ -11,17 +11,51 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         super(board, tileBag, rules);
     }
 
-    public ScrabbleCompPlayer(ScrabbleBoard board, ScrabbleTileBag tileBag, String trayFileName, ScrabbleRules rules){
-        super(board, tileBag, trayFileName, rules);
+    public ScrabbleCompPlayer(ScrabbleBoard board, ScrabbleTileBag tileBag, String trayAsString, ScrabbleRules rules){
+        super(board, tileBag, trayAsString, rules);
     }
 
     @Override
     public boolean takeTurn() {
+        //TODO may need to erase this later
+        this.blankPoints = new ArrayList<>();
+        for(ScrabbleTile t:tileTray.toArray()){
+            System.out.println(t.readTile());
+        }
+
+        //find the best move computers version of getting a move instead of using gui
+        bestMove = findBestMove();
+        System.out.println(bestMove);
+
+        //cache the move like we do for the human player i know it works already
+        cacheMove(bestMove);
+
+        //return false if it is a bad move. it is pretty much guarunteed to be valid as valid checks are conducted
+        //in find best move
+        if(!checkCachedMoveValid()){
+            return false;
+        }
+
+        //commit the move to the board
+        if(!approveMove()){
+            return false;
+        }
+
+        System.out.println("computer move passed");
+        tileTray.fillTray();
+
+        return true;
+    }
+
+    /**
+     *
+     * @return this will return the best possible move on the board
+     */
+    private HashMap<ScrabbleBoardPoint, ScrabbleTile> findBestMove() {
 
         //TODO need to right algorithm for taking a turn.
         //first get a list of played tiles via their points
         ArrayList<ScrabbleBoardPoint> playedPoints = board.getListPlayedTiles();
-        printPlayedPoints(playedPoints);
 
         //init horizontal
         HashMap<ScrabbleBoardPoint, ScrabbleTile> bestHorizontalMove = new HashMap<>();
@@ -34,11 +68,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         //iterate over every point
         for (ScrabbleBoardPoint p: playedPoints ) {
             bestHorizontalMove = bestHorizontalMoveAt(p, tileTray.getCopy(),new HashMap<>());
-            if(bestHorizontalMove == null) {
-                bestHorizontalMove = new HashMap<>();
 
-                // bestHorizontalScore = rules.calcScore(bestHorizontalMove, board);
-            }
 
             //bestVerticalMove = bestVerticalMoveAt(p, tileTray.getCopy());
             //bestVerticalScore = rules.calcScore(bestVerticalMove,board);
@@ -52,19 +82,13 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
                 bestMoveScore = bestVerticalScore;
             }*/
 
+
         }
-        System.out.println(bestHorizontalMove);
-        cacheMove(bestHorizontalMove);
-        approveMove();
-        /*
-        if(bestMove.isEmpty()){
-            System.out.println("error couldnt find any moves at all");
-            //TODO write something here
-        }*/
+        if(bestHorizontalMove == null){
+            bestHorizontalMove = new HashMap<>();
+        }
 
-
-
-        return false;
+        return bestHorizontalMove;
     }
 
     private void printPlayedPoints(ArrayList<ScrabbleBoardPoint> playedPoints) {
@@ -89,7 +113,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
                                                                            ArrayList<ScrabbleTile> tiles,
                                                                            HashMap<ScrabbleBoardPoint, ScrabbleTile> move) {
 
-        /*if(tiles == null) {
+        if(tiles == null) {
             System.out.println(tiles);
         }
 
@@ -97,18 +121,21 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         if(tiles.isEmpty()){
             //we should be able to modify this last move without deep copying it into the method TODO just incase I am wrong we may need to copy move
             //move = fullHorizontalMoveAt(p, move); TODO i dont think I need this
+            //System.out.println("entering tiles empty case. moves size : " + move.size());
 
             //if this is empty we just check if the move is valid
             if(rules.isMoveValid(move, board)){
                 return move;
-            }
+            }else {
 
-            return null;
+                return null;
+            }
         }
         //now the edge case of 1 tile will return move with the max score or null if there isnt any
         else if(tiles.size() == 1){
-            HashMap<ScrabbleBoardPoint, ScrabbleTile> moveL = null;
-            HashMap<ScrabbleBoardPoint, ScrabbleTile> moveR = null;
+            //System.out.println("entering tile size 1 case");
+            HashMap<ScrabbleBoardPoint, ScrabbleTile> moveL;
+            HashMap<ScrabbleBoardPoint, ScrabbleTile> moveR;
 
             ScrabbleBoardPoint leftOpen = getLeftOpenP(p,move);
             ScrabbleBoardPoint rightOpen = getRightOpenP(p,move);
@@ -119,11 +146,15 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
                 return bestHorizontalMoveAt(p,new ArrayList<>(),move);
             }
             //now do the other null cases
-            if(rightOpen == null){
+            if(rightOpen == null ){
                 return bestHorizontalMoveAt(leftOpen, new ArrayList<>(), copyMoveAndAdd(move,leftOpen, tiles.get(0)));
             }
             if(leftOpen == null){
                 return bestHorizontalMoveAt(rightOpen, new ArrayList<>(), copyMoveAndAdd(move,rightOpen, tiles.get(0)));
+            }
+
+            if(leftOpen== null || rightOpen == null){
+                System.out.println("error tile size1 case left and right open should not be null!");
             }
 
             //if we get this far we check to see which move returned has a the highest score
@@ -155,7 +186,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
 
         else if(tiles.size()>1) {
 
-            //System.out.println("got here!");
+            //System.out.println("got here! tile size greater than 1");
 
             //if we get this far the tray of tiles is more than one and we loop through it keeping the max score
             //first lets get the first open left and right points
@@ -173,24 +204,28 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
             for (ScrabbleTile t : tiles) {
                 //System.out.println("before " +rightOpen);
                 //TODO i must erase this to deal with blanks
-                if (t.getPoints() == 0) {
+                /*if (t.getPoints() == 0) {
                     continue;
-                }
+                }*/
 
                 //in this case we can only build right
                 if (leftOpen == null) {
                     moveR = bestHorizontalMoveAt(rightOpen, copyTilesWithNoT(tiles, t), copyMoveAndAdd(move, rightOpen, t));
 
                     maxMove = getMaxMove(moveR, maxMove);
-                    //if we get this far just leave Max move alone
+                    //continue to the next tile
+                    continue;
+
                 }
                 //now do the case if we can only build left
                 if (rightOpen == null) {
                     moveL = bestHorizontalMoveAt(leftOpen, copyTilesWithNoT(tiles, t), copyMoveAndAdd(move, leftOpen, t));
 
                     maxMove = getMaxMove(moveL, maxMove);
-                    // if we get this far leave the max move alone it could be nul or not
+                    continue;
+
                 }
+
 
                 //if we get this far we need to check the max of all possibilites
                 //System.out.println("after " +rightOpen);
@@ -206,21 +241,26 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
                 //if only the moveL returns something valid
                 if (moveR == null) {
                     maxMove = getMaxMove(moveL, maxMove);
+                    continue;
                 }
                 //if only the moveR returns somthing valid
                 if (moveL == null) {
                     maxMove = getMaxMove(moveR, maxMove);
+                    continue;
                 }
                 //if we get this far then we get the Maxmove of all 3
                 maxMove = getMaxMove(getMaxMove(moveL, moveR), maxMove);
-                System.out.println("what?");
-                return maxMove;
-            }
-        }
 
-        //System.out.println(tiles.size());
-        //System.out.println("this should never run!");*/
-        return null;
+
+            }
+            //System.out.println("what?");
+            return maxMove;
+        }
+        else {
+            //System.out.println(tiles.size());
+            System.out.println("this should never run!");
+            return null;
+        }
     }
 
     /**
