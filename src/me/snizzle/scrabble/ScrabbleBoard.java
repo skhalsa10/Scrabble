@@ -148,21 +148,19 @@ public class ScrabbleBoard {
         }
     }
 
+
     /**
-     * given a hashmap of moves  this function will check if the move is valid on the board
-     * @param moves this is a hashmap of points mapped to tiles
-     * @param rules the rules to check the move against
-     * @return true if valid else false
+     * creates a list of all played tile mapped to the points they are on
+     * @return
      */
-    public boolean validMove(HashMap<ScrabbleBoardPoint, ScrabbleTile> moves, ScrabbleRules rules){
-        //TODO need to first check if any tiles are mapped to a board point that already has a tile
-        //TODO should I move this out of the board?
-        return true;
-    }
-
     public HashMap<ScrabbleBoardPoint, ScrabbleTile> export() {
+        //generate a list of all played points mapped to tiles
+        HashMap<ScrabbleBoardPoint, ScrabbleTile> temp = new HashMap<>();
+        for (ScrabbleBoardPoint p :getListPlayedTiles()) {
+            temp.put(new ScrabbleBoardPoint(p.getRow(),p.getCol()),readTileAt(p.getRow(),p.getCol()));
+        }
 
-        HashMap<ScrabbleBoardPoint, ScrabbleTile> temp = cachedMove;
+        // HashMap<ScrabbleBoardPoint, ScrabbleTile> temp = cachedMove; TODO I might not really need this cachedmove setting
         cachedMove = null;
         return temp;
 

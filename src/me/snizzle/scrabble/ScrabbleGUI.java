@@ -687,7 +687,16 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
         if(newTurn){
             userMovedFailed = es.isUserMoveFailed();
             userTray = es.viewUserTray();
-            board.placeTiles(es.getPlayedTiles());
+
+            //delete the already played tiles
+            HashMap<ScrabbleBoardPoint, ScrabbleTile> temp = es.getPlayedTiles();
+            for (ScrabbleBoardPoint p: board.getListPlayedTiles()) {
+                if(temp.containsKey(p)){
+                    temp.remove(p);
+                }
+            }
+            //board.placeTiles(es.getPlayedTiles());
+            board.placeTiles(temp);
             playerScoreNum.setText(Integer.toString(es.getPlayerScore()));
             compScoreNum.setText(Integer.toString(es.getCompScore()));
         }

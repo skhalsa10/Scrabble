@@ -17,13 +17,20 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
 
     @Override
     public boolean takeTurn() {
+
         //TODO need to right algorithm for taking a turn.
         //first get a list of played tiles via their points
         ArrayList<ScrabbleBoardPoint> playedPoints = board.getListPlayedTiles();
+        printPlayedPoints(playedPoints);
+
+        //init horizontal
         HashMap<ScrabbleBoardPoint, ScrabbleTile> bestHorizontalMove = new HashMap<>();
         int bestHorizontalScore = 0;
+
+        //init vertical
         HashMap<ScrabbleBoardPoint, ScrabbleTile> bestVerticalMove = new HashMap<>();
         int bestVerticalScore = 0;
+
         //iterate over every point
         for (ScrabbleBoardPoint p: playedPoints ) {
             bestHorizontalMove = bestHorizontalMoveAt(p, tileTray.getCopy(),new HashMap<>());
@@ -46,6 +53,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
             }*/
 
         }
+        System.out.println(bestHorizontalMove);
         cacheMove(bestHorizontalMove);
         approveMove();
         /*
@@ -57,6 +65,12 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
 
 
         return false;
+    }
+
+    private void printPlayedPoints(ArrayList<ScrabbleBoardPoint> playedPoints) {
+        for (ScrabbleBoardPoint p: playedPoints ) {
+            System.out.println("r: " + p.getRow() + " c: " + p.getCol() + " -> " + board.readTileAt(p.getRow(),p.getCol()));
+        }
     }
 
 

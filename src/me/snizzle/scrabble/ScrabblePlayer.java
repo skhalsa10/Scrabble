@@ -52,8 +52,6 @@ public abstract class ScrabblePlayer {
 
     }
 
-    //TODO i might want to add a parameter here that takes some parameter representing the human player
-    //TODO move imported from the GUI
     public abstract boolean takeTurn();
 
     public void cacheMove(HashMap<ScrabbleBoardPoint, ScrabbleTile> move) {

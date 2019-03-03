@@ -48,6 +48,7 @@ public class ScrabbleGameLogic implements GameLogic {
      * @param exporter
      */
     public void export(Exporter exporter) {
+        //System.out.println(board.getListPlayedTiles().size());
         //I will update the exportS with the current tray and the new tiles played since last render
         exportS.exportUserTray(player.tileTrayToArray());
         exportS.setPlayedTiles(board.export());
@@ -84,7 +85,7 @@ public class ScrabbleGameLogic implements GameLogic {
         }
         //process the computer if it is not the users turn
         if (!isPlayerTurn) {
-            //comp.takeTurn();
+            comp.takeTurn();
             isPlayerTurn = true;
         }
 
