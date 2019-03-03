@@ -25,7 +25,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
 
         //find the best move computers version of getting a move instead of using gui
         bestMove = findBestMove();
-        System.out.println(bestMove);
+        printMove(bestMove);
 
         //cache the move like we do for the human player i know it works already
         cacheMove(bestMove);
@@ -33,6 +33,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         //return false if it is a bad move. it is pretty much guarunteed to be valid as valid checks are conducted
         //in find best move
         if(!checkCachedMoveValid()){
+
             return false;
         }
         System.out.println("computer move passed the chace check");
@@ -45,6 +46,12 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         tileTray.fillTray();
 
         return true;
+    }
+
+    private void printMove(HashMap<ScrabbleBoardPoint, ScrabbleTile> bestMove) {
+        for (ScrabbleBoardPoint p: bestMove.keySet() ) {
+            System.out.println("row: " + p.getRow() + " col: " + p.getCol() + " letter: " + bestMove.get(p).readTile());
+        }
     }
 
     /**
@@ -66,7 +73,13 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         int bestVerticalScore = 0;
 
         ArrayList<ScrabbleTile> test = new ArrayList<>();
-        test.add(new ScrabbleTile('e',8));
+        test.add(new ScrabbleTile('T',8));
+        test.add(new ScrabbleTile('o',10));
+        test.add(new ScrabbleTile('l',10));
+        test.add(new ScrabbleTile('o',8));
+        test.add(new ScrabbleTile('e',10));
+        test.add(new ScrabbleTile('r',10));
+
         //iterate over every point
         for (ScrabbleBoardPoint p: playedPoints ) {
             //bestHorizontalMove = bestHorizontalMoveAt(p, tileTray.getCopy(),new HashMap<>());
@@ -192,7 +205,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
             //first lets get the first open left and right points
             HashMap<ScrabbleBoardPoint, ScrabbleTile> moveL = null;
             HashMap<ScrabbleBoardPoint, ScrabbleTile> moveR = null;
-            HashMap<ScrabbleBoardPoint, ScrabbleTile> maxMove = null;
+            HashMap<ScrabbleBoardPoint, ScrabbleTile> maxMove = move;
 
             ScrabbleBoardPoint leftOpen = getLeftOpenP(p, move);
             ScrabbleBoardPoint rightOpen = getRightOpenP(p, move);
@@ -249,9 +262,23 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
 
 
             }
-            //System.out.println("what?");
+
             return maxMove;
         }
+        /*else if(tiles.size()>1){
+
+            HashMap<ScrabbleBoardPoint, ScrabbleTile> moveL = null;
+            HashMap<ScrabbleBoardPoint, ScrabbleTile> moveR = null;
+            HashMap<ScrabbleBoardPoint, ScrabbleTile> moveM = null;
+
+
+            ScrabbleBoardPoint leftOpen = getLeftOpenP(p,move);
+            ScrabbleBoardPoint rightOpen = getRightOpenP(p,move);
+
+            //if there is no available spots
+            i
+
+        }*/
         else {
             //System.out.println(tiles.size());
             System.out.println("this should never run!");

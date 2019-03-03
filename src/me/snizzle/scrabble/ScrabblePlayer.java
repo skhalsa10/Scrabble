@@ -68,7 +68,7 @@ public abstract class ScrabblePlayer {
     public boolean checkCachedMoveValid(){
         //this no longer works now that I added blanks because they do not exist in the tray. i need to feed it with blanks
         //if(!tileTray.contains(new ArrayList<>(currentMove.values()))){
-        //System.out.println(tileTray.contains(getCurrentMoveValuesAsBlanks()));
+        System.out.println(tileTray.contains(getCurrentMoveValuesWithBlanks()));
         if(!tileTray.contains(getCurrentMoveValuesWithBlanks())){
             return false;
         }
@@ -93,6 +93,7 @@ public abstract class ScrabblePlayer {
                 temp.add(currentMove.get(p));
             }
         }
+
         return temp;
     }
 
