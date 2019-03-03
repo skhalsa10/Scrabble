@@ -65,10 +65,12 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         HashMap<ScrabbleBoardPoint, ScrabbleTile> bestVerticalMove = new HashMap<>();
         int bestVerticalScore = 0;
 
+        ArrayList<ScrabbleTile> test = new ArrayList<>();
+        test.add(new ScrabbleTile('e',8));
         //iterate over every point
         for (ScrabbleBoardPoint p: playedPoints ) {
-            bestHorizontalMove = bestHorizontalMoveAt(p, tileTray.getCopy(),new HashMap<>());
-
+            //bestHorizontalMove = bestHorizontalMoveAt(p, tileTray.getCopy(),new HashMap<>());
+            bestHorizontalMove = bestHorizontalMoveAt(p, test,new HashMap<>());
 
             //bestVerticalMove = bestVerticalMoveAt(p, tileTray.getCopy());
             //bestVerticalScore = rules.calcScore(bestVerticalMove,board);
@@ -119,10 +121,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
 
         //the first edge case is if our list of tiles is empty there is no move return the move as best move
         if(tiles.isEmpty()){
-            //we should be able to modify this last move without deep copying it into the method TODO just incase I am wrong we may need to copy move
-            //move = fullHorizontalMoveAt(p, move); TODO i dont think I need this
-            //System.out.println("entering tiles empty case. moves size : " + move.size());
-
+            System.out.println("I got to the tray being empty");
             //if this is empty we just check if the move is valid
             if(rules.isMoveValid(move, board)){
                 return move;
@@ -133,7 +132,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         }
         //now the edge case of 1 tile will return move with the max score or null if there isnt any
         else if(tiles.size() == 1){
-            //System.out.println("entering tile size 1 case");
+            System.out.println("entering tile size 1 case");
             HashMap<ScrabbleBoardPoint, ScrabbleTile> moveL;
             HashMap<ScrabbleBoardPoint, ScrabbleTile> moveR;
 
@@ -150,6 +149,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
                 return bestHorizontalMoveAt(leftOpen, new ArrayList<>(), copyMoveAndAdd(move,leftOpen, tiles.get(0)));
             }
             if(leftOpen == null){
+                System.out.println("col " + rightOpen.getCol() + "row " + rightOpen.getRow());
                 return bestHorizontalMoveAt(rightOpen, new ArrayList<>(), copyMoveAndAdd(move,rightOpen, tiles.get(0)));
             }
 
@@ -202,11 +202,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
             }
 
             for (ScrabbleTile t : tiles) {
-                //System.out.println("before " +rightOpen);
-                //TODO i must erase this to deal with blanks
-                /*if (t.getPoints() == 0) {
-                    continue;
-                }*/
+
 
                 //in this case we can only build right
                 if (leftOpen == null) {

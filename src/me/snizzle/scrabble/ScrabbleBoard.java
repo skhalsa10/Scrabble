@@ -207,6 +207,7 @@ public class ScrabbleBoard {
     }
 
     public ScrabbleTile readTileAt(int r, int c){
+        System.out.println(r);
         return boardTiles[r][c];
     }
 

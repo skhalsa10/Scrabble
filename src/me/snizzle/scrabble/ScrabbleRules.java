@@ -530,24 +530,37 @@ public class ScrabbleRules {
      * @return
      */
     private boolean isVerticalWordEnd(ScrabbleBoardPoint p, ScrabbleBoard board) {
-        //if at top of board
-        if(p.getRow() == 0 && board.readTileAt(p.getRow()+1, p.getCol()) != null){
-            return true;
-        }
-        // tile above is empty but tile below is not ... end piece
-        if(board.readTileAt(p.getRow()-1, p.getCol()) == null &&
-                p.getRow() != board.getBoardSize()-1 &&
-                board.readTileAt(p.getRow()+1, p.getCol()) != null){
-            return true;
+        //if at top of board and not null then
+        if(p.getRow() == 0){
+            //this is a top end if it is not null and the space below is not null
+            if (board.readTileAt(p.getRow(), p.getCol()) != null &&
+                    board.readTileAt(p.getRow()+1, p.getCol()) != null ) {
+                return true;
+            } else {
+                return false;
+            }
         }
 
         //if at bottom of board
-        if(p.getRow() == board.getBoardSize()-1 && board.readTileAt(p.getRow()-1, p.getCol()) != null){
+        if(p.getRow() == board.getBoardSize()-1){
+            // this is an end if it is not null and the tile above is not null
+            if(board.readTileAt(p.getRow(), p.getCol()) != null &&
+                    board.readTileAt(p.getRow()-1, p.getCol()) != null) {
+                return true;
+            }else{
+                return false;
+            }
+        }
+        // tile above is empty but tile below is not ... end piece
+        if(board.readTileAt(p.getRow()-1, p.getCol()) == null &&
+                board.readTileAt(p.getRow(), p.getCol()) != null  &&
+                board.readTileAt(p.getRow()+1, p.getCol()) != null){
             return true;
         }
         // tile below is empty but tile above is not ... end piece
         if(board.readTileAt(p.getRow()+1, p.getCol()) == null &&
-                p.getRow() != 0 && board.readTileAt(p.getRow()-1, p.getCol()) != null){
+                board.readTileAt(p.getRow(), p.getCol()) != null &&
+                board.readTileAt(p.getRow()-1, p.getCol()) != null){
             return true;
         }
 
