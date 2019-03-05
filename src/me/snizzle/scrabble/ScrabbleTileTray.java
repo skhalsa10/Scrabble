@@ -42,6 +42,7 @@ public class ScrabbleTileTray {
      * fills the tray back up to 7 or as many tiles are left in the tile bag
      */
     public void fillTray(){
+        System.out.println(tileBag);
         while(!tileBag.isEmpty() && tray.size() < 7 ){
             drawFromTileBag();
         }
@@ -51,9 +52,9 @@ public class ScrabbleTileTray {
      * overloaded version used for testing purposes loads a tile tray from a file.
      * @param trayString string of characters that contains a tray representation.
      */
-    public ScrabbleTileTray(String trayString){
+    public ScrabbleTileTray(String trayString, ScrabbleTileBag tileBag){
         //this is a test version of the tile tray needed for the computer test
-        tileBag = null;
+        this.tileBag = tileBag;
         tray = new ArrayList<>();
         if(trayString.length() != 7){
             System.out.println("Error parsing string");

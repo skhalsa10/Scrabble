@@ -2,6 +2,7 @@ package me.snizzle.scrabble;
 
 
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -52,7 +53,7 @@ public class ScrabbleRules {
     //private ScrabbleBoard board;
 
     public ScrabbleRules(){
-        this("resources/twl06.txt");
+        this("resources/sowpods.txt");
     }
 
     public ScrabbleRules(String fileName){
@@ -189,6 +190,9 @@ public class ScrabbleRules {
 
         //get set of of words represented by points
         HashSet<ArrayList<ScrabbleBoardPoint>> wordPoints = getWordPointsSet(currentMove, board, currentDirection);
+        //printCurrentMove(currentMove);
+        //System.out.println(currentDirection);
+        //System.out.println("wordpoints size: " + wordPoints.size());
 
         //make sure all the words are actual words in the dictionary
         if(!wordsInDictionary(wordPoints, board, currentMove)){
@@ -305,16 +309,16 @@ public class ScrabbleRules {
      */
     private boolean wordsInDictionary(HashSet<ArrayList<ScrabbleBoardPoint>> wordPoints,
                                       ScrabbleBoard board,
-                                      HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove) {
+                                      HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove){
 
         ArrayList<String> wordsAsStrings = convertPointsToStrings(wordPoints, board, currentMove);
         for (String word: wordsAsStrings ) {
             //System.out.println(word);
             if(!dictionary.verify(word)){
-                System.out.println(word + " is not a word");
+                //System.out.println(word + " is not a word");
                 return false;
             }
-            System.out.println(word + " is a word!!!");
+            //System.out.println(word + " is a word!!!");
         }
 
         return true;
@@ -364,6 +368,11 @@ public class ScrabbleRules {
         HashSet<ArrayList<ScrabbleBoardPoint>> wordsSet = new HashSet<>();
         ArrayList<ScrabbleBoardPoint> word = new ArrayList<>();
 
+        //if an empty move is fed in return an emptyset of words
+        if(currentMove.isEmpty()){
+            return wordsSet;
+        }
+
         Iterator<ScrabbleBoardPoint> iterator = currentMove.keySet().iterator();
         ScrabbleBoardPoint p = iterator.next();
         //if the direction is horizontal get the horizontal word
@@ -372,7 +381,7 @@ public class ScrabbleRules {
             wordsSet.add(word);
 
             //check to see if the first p has a vertical
-            if(isVerticalWordEnd(p, board)){
+            if(isVerticalWordEnd(currentMove, p, board)){
                 // since it is a vertical end lets calculate the word
 
                 word = getVerticalWord(currentMove,p, board);
@@ -384,7 +393,7 @@ public class ScrabbleRules {
                 p = iterator.next();
 
                 //check to see if the p is an end piece to a vertical word. if it is a middle piece it will not make a new word
-                if(isVerticalWordEnd(p, board)){
+                if(isVerticalWordEnd(currentMove,p, board)){
                     // since it is a vertical end lets calculate the word
 
                     word = getVerticalWord(currentMove, p, board);
@@ -400,7 +409,9 @@ public class ScrabbleRules {
             wordsSet.add(word);
 
             //check to see if the first p makes up a horizontal word
-            if(isHorizontalWordEnd(p,board)){
+            //System.out.println("r: " + p.getRow() + " c: " + p.getCol());
+            //System.out.println(isHorizontalWordEnd(currentMove,p,board));
+            if(isHorizontalWordEnd(currentMove, p,board)){
                 word = getHorizontalWord(currentMove,p,board);
                 wordsSet.add(word);
             }
@@ -409,7 +420,7 @@ public class ScrabbleRules {
                 p = iterator.next();
 
                 //check to see if the first p makes up a horizontal word
-                if(isHorizontalWordEnd(p,board)){
+                if(isHorizontalWordEnd(currentMove,p,board)){
                     word = getHorizontalWord(currentMove,p,board);
                     wordsSet.add(word);
                 }
@@ -419,11 +430,11 @@ public class ScrabbleRules {
 
         //the last case we are dealing with is if we place a single tile and there is no direction
         //just check if it is a vertical or horizontal word end and get the words
-        if(isVerticalWordEnd(p,board)){
+        if(isVerticalWordEnd(currentMove,p,board)){
             word = getVerticalWord(currentMove, p, board);
             wordsSet.add(word);
         }
-        if(isHorizontalWordEnd(p,board)){
+        if(isHorizontalWordEnd(currentMove,p,board)){
             word = getHorizontalWord(currentMove,p,board);
             wordsSet.add(word);
         }
@@ -438,11 +449,12 @@ public class ScrabbleRules {
      * @param board board to reference
      * @return true if p contains a tile that is the end piece of a horizontal word
      */
-    private boolean isHorizontalWordEnd(ScrabbleBoardPoint p, ScrabbleBoard board) {
+    private boolean isHorizontalWordEnd(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove,
+                                        ScrabbleBoardPoint p, ScrabbleBoard board) {
         //if on left edge
         if (p.getCol() == 0 ) {
             //if the point is not null and the point to the right is not null then we have an end
-            if(board.readTileAt(p.getRow(), p.getCol()) != null &&
+            if((board.readTileAt(p.getRow(), p.getCol()) != null || currentMove.containsKey(p))&&
                     board.readTileAt(p.getRow(), p.getCol() + 1) != null) {
                 return true;
             }else {
@@ -451,7 +463,7 @@ public class ScrabbleRules {
         }
         //checking if it is a right edge
         if(p.getCol() == board.getBoardSize()-1){
-            if(board.readTileAt(p.getRow(),p.getCol()) != null &&
+            if((board.readTileAt(p.getRow(),p.getCol()) != null || currentMove.containsKey(p)) &&
                     board.readTileAt(p.getRow(),p.getCol()-1) != null) {
                 return true;
             }
@@ -462,7 +474,7 @@ public class ScrabbleRules {
 
         //if left end
         if (board.readTileAt(p.getRow(), p.getCol() - 1) == null &&
-                board.readTileAt(p.getRow(), p.getCol()) != null &&
+                (board.readTileAt(p.getRow(), p.getCol()) != null || currentMove.containsKey(p)) &&
                 board.readTileAt(p.getRow(), p.getCol() + 1) != null){
 
             return true;
@@ -470,7 +482,7 @@ public class ScrabbleRules {
 
         //not on edge
         if(board.readTileAt(p.getRow(),p.getCol() +1) ==null &&
-                board.readTileAt(p.getRow(),p.getCol()) != null &&
+                (board.readTileAt(p.getRow(),p.getCol()) != null || currentMove.containsKey(p))&&
                 board.readTileAt(p.getRow(),p.getCol()-1) != null){
             return true;
         }
@@ -543,11 +555,12 @@ public class ScrabbleRules {
      * @param board
      * @return
      */
-    private boolean isVerticalWordEnd(ScrabbleBoardPoint p, ScrabbleBoard board) {
+    private boolean isVerticalWordEnd(HashMap<ScrabbleBoardPoint, ScrabbleTile> currentMove,
+                                      ScrabbleBoardPoint p, ScrabbleBoard board) {
         //if at top of board and not null then
         if(p.getRow() == 0){
             //this is a top end if it is not null and the space below is not null
-            if (board.readTileAt(p.getRow(), p.getCol()) != null &&
+            if ((board.readTileAt(p.getRow(), p.getCol()) != null || currentMove.containsKey(p)) &&
                     board.readTileAt(p.getRow()+1, p.getCol()) != null ) {
                 return true;
             } else {
@@ -558,7 +571,7 @@ public class ScrabbleRules {
         //if at bottom of board
         if(p.getRow() == board.getBoardSize()-1){
             // this is an end if it is not null and the tile above is not null
-            if(board.readTileAt(p.getRow(), p.getCol()) != null &&
+            if((board.readTileAt(p.getRow(), p.getCol()) != null || currentMove.containsKey(p))&&
                     board.readTileAt(p.getRow()-1, p.getCol()) != null) {
                 return true;
             }else{
@@ -567,13 +580,13 @@ public class ScrabbleRules {
         }
         // tile above is empty but tile below is not ... end piece
         if(board.readTileAt(p.getRow()-1, p.getCol()) == null &&
-                board.readTileAt(p.getRow(), p.getCol()) != null  &&
+                (board.readTileAt(p.getRow(), p.getCol()) != null || currentMove.containsKey(p)) &&
                 board.readTileAt(p.getRow()+1, p.getCol()) != null){
             return true;
         }
         // tile below is empty but tile above is not ... end piece
         if(board.readTileAt(p.getRow()+1, p.getCol()) == null &&
-                board.readTileAt(p.getRow(), p.getCol()) != null &&
+                (board.readTileAt(p.getRow(), p.getCol()) != null || currentMove.containsKey(p)) &&
                 board.readTileAt(p.getRow()-1, p.getCol()) != null){
             return true;
         }
@@ -744,6 +757,14 @@ public class ScrabbleRules {
         if(isHorizontal && !isVertical){return Direction.HORIZ;}
         if(!isHorizontal && isVertical){return Direction.VERT;}
         return Direction.ERROR;
+    }
+
+    public boolean dictContains(String word) {
+        return dictionary.verify(word);
+    }
+
+    public boolean dictIsPrefix(String prefix) {
+        return dictionary.isPrefix(prefix);
     }
 
     /**

@@ -49,7 +49,7 @@ public abstract class ScrabblePlayer {
         this.board = board;
         this.tileBag = tileBag;
         this.score = new ScrabbleScore();
-        this.tileTray = new ScrabbleTileTray(trayAsString);
+        this.tileTray = new ScrabbleTileTray(trayAsString,tileBag);
         this.blankPoints = new ArrayList<>();
 
     }
@@ -68,7 +68,7 @@ public abstract class ScrabblePlayer {
     public boolean checkCachedMoveValid(){
         //this no longer works now that I added blanks because they do not exist in the tray. i need to feed it with blanks
         //if(!tileTray.contains(new ArrayList<>(currentMove.values()))){
-        System.out.println(tileTray.contains(getCurrentMoveValuesWithBlanks()));
+        //System.out.println(tileTray.contains(getCurrentMoveValuesWithBlanks()));
         if(!tileTray.contains(getCurrentMoveValuesWithBlanks())){
             return false;
         }
