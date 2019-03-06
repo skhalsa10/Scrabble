@@ -21,15 +21,19 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
     public boolean takeTurn() {
         //TODO may need to erase this later
         this.blankPoints = new ArrayList<>();
-        /*for(ScrabbleTile t:tileTray.toArray()){
-            System.out.println(t.readTile());
-        }*/
+
 
         //find the best move computers version of getting a move instead of using gui
         //bestMove = findBestMoveSlow();
         bestMove = new HashMap<>();
         bestMoveScore = 0;
+
+        long start = System.currentTimeMillis();
         findBestMove();
+        // ending time
+        long end = System.currentTimeMillis();
+        System.out.println("Find Best move takes " +  (end - start) + "ms");
+
         //printMove(bestMove);
         System.out.println("SCORE: " + bestMoveScore);
 
@@ -158,7 +162,6 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
 
         //this is the closing case for the recurssion
         if(tiles.size() == 0){
-            //System.out.println(move.size());
             if(rules.dictContains(word)){
                 if(rules.isMoveValid(move,board)){
                     int moveScore = rules.calcScore(move,board);
@@ -176,15 +179,25 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         }
         else if(tiles.size()>0){
 
+            //word = getVWord(p, move);
+
             //find the open points
-            ScrabbleBoardPoint bottomOpen = null;
+            ScrabbleBoardPoint bottomOpen;
             ScrabbleBoardPoint topOpen;
+            //add to the string as we find the bottom open
+            StringBuilder bWordBuilder = new StringBuilder(word);
+            bottomOpen = getBottomOpenP(p,move,bWordBuilder);
+            String bWord = bWordBuilder.toString();
             //we do not want to was time adding tiles on the rightside if the current word is not a prefix of something
-            if(rules.dictIsPrefix(word)){
-                bottomOpen = getBottomOpenP(p,move);
+            if(!rules.dictIsPrefix(bWord)){
+                bottomOpen = null;
             }
+
             //we dont have an isSuffix so we have to brute force the top side
-            topOpen = getTopOpenP(p,move);
+            //but lets also update the word as we find the open
+            StringBuilder tWordBuilder =  new StringBuilder(word);
+            topOpen = getTopOpenP(p,move,tWordBuilder);
+            String tWord = tWordBuilder.toString();
 
             boolean top = false;
             boolean bottom = false;
@@ -200,19 +213,19 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
                 //at least one of the open points is valid
                 //if it is the right side
                 if(topOpen == null){
-                    bottom = getMaxVMove(bottomOpen,(word+t.readTile()),copyMoveAndAdd(move,bottomOpen,t),copyTilesWithNoT(tiles,t));
+                    bottom = getMaxVMove(bottomOpen,(bWord+t.readTile()),copyMoveAndAdd(move,bottomOpen,t),copyTilesWithNoT(tiles,t));
                     continue;
                 }
 
                 //if it is the left side that is valid
                 if(bottomOpen == null){
-                    top = getMaxVMove(topOpen,(t.readTile()+word),copyMoveAndAdd(move,topOpen,t),copyTilesWithNoT(tiles,t));
+                    top = getMaxVMove(topOpen,(t.readTile()+tWord),copyMoveAndAdd(move,topOpen,t),copyTilesWithNoT(tiles,t));
                     continue;
                 }
 
                 //System.out.println(leftOpen);
-                top =  getMaxVMove(topOpen,(t.readTile()+word),copyMoveAndAdd(move,topOpen,t),copyTilesWithNoT(tiles,t)) || top;
-                bottom = getMaxVMove(bottomOpen,(word+t.readTile()),copyMoveAndAdd(move,bottomOpen,t),copyTilesWithNoT(tiles,t)) || bottom;
+                top =  getMaxVMove(topOpen,(t.readTile()+tWord),copyMoveAndAdd(move,topOpen,t),copyTilesWithNoT(tiles,t)) || top;
+                bottom = getMaxVMove(bottomOpen,(bWord+t.readTile()),copyMoveAndAdd(move,bottomOpen,t),copyTilesWithNoT(tiles,t)) || bottom;
                 //if we get this far both sides are valid.
 
             }
@@ -278,6 +291,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         return getTopPoint(new ScrabbleBoardPoint(p.getRow()-1,p.getCol()));
     }
 
+
     /**
      *
      * I am rewriting this method for the millionth time with assumptions to make it easier.
@@ -288,7 +302,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
      * @param move
      * @return
      */
-    private ScrabbleBoardPoint getBottomOpenP(ScrabbleBoardPoint p, HashMap<ScrabbleBoardPoint, ScrabbleTile> move) {
+    private ScrabbleBoardPoint getBottomOpenP(ScrabbleBoardPoint p, HashMap<ScrabbleBoardPoint, ScrabbleTile> move, StringBuilder bWord) {
 
         //if we get a p off of the board to the bottom
         if(p.getRow() >= board.getBoardSize()){
@@ -300,21 +314,19 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
             return p;
         }
 
+        //add the next letter to the word if it exists
+        if(p.getRow() < board.getBoardSize()-1 && board.readTileAt(p.getRow()+1,p.getCol()) != null){
+            bWord.append(board.readTileAt(p.getRow()+1,p.getCol()).readTile());
+        }
+
 
         //check the p below this one
-        return getBottomOpenP(new ScrabbleBoardPoint(p.getRow()+1,p.getCol()),move);
+        return getBottomOpenP(new ScrabbleBoardPoint(p.getRow()+1,p.getCol()),move,bWord);
     }
 
 
-    /**
-     * I am writing this method again because it is harder than it should be haha. I am now writing it
-     * making some assumptions that  if i am given a p representing a blank it is an open
-     * @param p
-     * @param move
-     * @return
-     */
     private ScrabbleBoardPoint getTopOpenP(ScrabbleBoardPoint p,
-                                           HashMap<ScrabbleBoardPoint, ScrabbleTile> move) {
+                                           HashMap<ScrabbleBoardPoint, ScrabbleTile> move, StringBuilder tWord) {
         //if p is off the board to the top return null
         if(p.getRow() <0){
             return null;
@@ -325,8 +337,15 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
             return p;
         }
 
+        if(p.getRow()>0 && board.readTileAt(p.getRow()-1,p.getCol())!=null){
+            //tWord.reverse();
+            //tWord.append(board.readTileAt(p.getRow()-1,p.getCol()).readTile());
+            //tWord.reverse();
+            tWord.insert(0,board.readTileAt(p.getRow()-1,p.getCol()).readTile());
+        }
+
         //check tile above
-        return getTopOpenP(new ScrabbleBoardPoint(p.getRow()-1,p.getCol()),move);
+        return getTopOpenP(new ScrabbleBoardPoint(p.getRow()-1,p.getCol()),move, tWord);
     }
 
     /**
@@ -366,16 +385,23 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
             //find the open points
             ScrabbleBoardPoint rightOpen = null;
             ScrabbleBoardPoint leftOpen;
+
+            StringBuilder rWordBuilder = new StringBuilder(word);
+            rightOpen = getRightOpenP(p,move,rWordBuilder);
+            String rWord = rWordBuilder.toString();
             //we do not want to was time adding tiles on the rightside if the current word is not a prefix of something
-            if(rules.dictIsPrefix(word)){
-                rightOpen = getRightOpenP(p,move);
+            if(!rules.dictIsPrefix(rWord)){
+                rightOpen = null;
             }
+
             //we dont have an isSuffix so we have to brute force the left side
-            leftOpen = getLeftOpenP(p,move);
+            StringBuilder lWordBuilder = new StringBuilder(word);
+            leftOpen = getLeftOpenP(p,move,lWordBuilder);
+            String lWord = rWordBuilder.toString();
 
             boolean left = false;
             boolean right = false;
-            boolean last = false;
+
 
             //NOW THAT WE HAVE OPENS we can loop through and reduce the recursion accordingly
             for (ScrabbleTile t:tiles ) {
@@ -388,26 +414,26 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
                 //at least one of the open points is valid
                 //if it is the right side
                 if(leftOpen == null){
-                    right = getMaxHMove(rightOpen,(word+t.readTile()),copyMoveAndAdd(move,rightOpen,t),copyTilesWithNoT(tiles,t));
+                    right = getMaxHMove(rightOpen,(rWord+t.readTile()),copyMoveAndAdd(move,rightOpen,t),copyTilesWithNoT(tiles,t));
                     continue;
                 }
 
                 //if it is the left side that is valid
                 if(rightOpen == null){
-                    left = getMaxHMove(leftOpen,(t.readTile()+word),copyMoveAndAdd(move,leftOpen,t),copyTilesWithNoT(tiles,t));
+                    left = getMaxHMove(leftOpen,(t.readTile()+lWord),copyMoveAndAdd(move,leftOpen,t),copyTilesWithNoT(tiles,t));
                     continue;
                 }
 
                 //System.out.println(leftOpen);
-                left =  getMaxHMove(leftOpen,(t.readTile()+word),copyMoveAndAdd(move,leftOpen,t),copyTilesWithNoT(tiles,t)) || left;
-                right = getMaxHMove(rightOpen,(word+t.readTile()),copyMoveAndAdd(move,rightOpen,t),copyTilesWithNoT(tiles,t)) || right;
+                left =  getMaxHMove(leftOpen,(t.readTile()+lWord),copyMoveAndAdd(move,leftOpen,t),copyTilesWithNoT(tiles,t)) || left;
+                right = getMaxHMove(rightOpen,(rWord+t.readTile()),copyMoveAndAdd(move,rightOpen,t),copyTilesWithNoT(tiles,t)) || right;
                 //if we get this far both sides are valid.
 
             }
 
             while(!tiles.isEmpty()){
 
-                last = getMaxHMove(p,word,move,copyTilesWithNoT(tiles,tiles.get(0)));
+                getMaxHMove(p,word,move,copyTilesWithNoT(tiles,tiles.get(0)));
                 tiles.remove(0);
             }
         }
@@ -477,7 +503,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
      * @param move
      * @return the first open point on the board that doesnt have a tile to the right of p and null if there is no open tile to the right
      */
-    private ScrabbleBoardPoint getRightOpenP(ScrabbleBoardPoint p, HashMap<ScrabbleBoardPoint, ScrabbleTile> move) {
+    private ScrabbleBoardPoint getRightOpenP(ScrabbleBoardPoint p, HashMap<ScrabbleBoardPoint, ScrabbleTile> move, StringBuilder rWord) {
 
         //if we get a p off the right edge of the board
         if(p.getCol() >= board.getBoardSize()){
@@ -488,8 +514,11 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         if(!move.containsKey(p) && board.readTileAt(p.getRow(),p.getCol())== null){
             return p;
         }
+        if(p.getCol()<board.getBoardSize()-1&& board.readTileAt(p.getRow(),p.getCol()+1)!= null){
+            rWord.append(board.readTileAt(p.getRow(),p.getCol()+1).readTile());
+        }
 
-        return getRightOpenP(new ScrabbleBoardPoint(p.getRow(),p.getCol()+1),move);
+        return getRightOpenP(new ScrabbleBoardPoint(p.getRow(),p.getCol()+1),move, rWord);
     }
 
     /**
@@ -499,7 +528,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
      * @return
      */
     private ScrabbleBoardPoint getLeftOpenP(ScrabbleBoardPoint p,
-                                            HashMap<ScrabbleBoardPoint, ScrabbleTile> move) {
+                                            HashMap<ScrabbleBoardPoint, ScrabbleTile> move, StringBuilder lWord) {
 
         //if p is off the left edge return null
         if(p.getCol() < 0){
@@ -511,7 +540,11 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
             return p;
         }
 
-        return getLeftOpenP(new ScrabbleBoardPoint(p.getRow(),p.getCol()-1), move);
+        if(p.getCol()>0 && board.readTileAt(p.getRow(),p.getCol()-1) != null){
+            lWord.insert(0,board.readTileAt(p.getRow(),p.getCol()-1).readTile());
+        }
+
+        return getLeftOpenP(new ScrabbleBoardPoint(p.getRow(),p.getCol()-1), move, lWord);
 
 
     }

@@ -1,0 +1,53 @@
+Computer AI take turn method.
+right now it averages 26 seconds
+of the 21 length board that has no blanks in the tile tray
+
+---------AFTER making the horizontal method return void---------------------------
+
+No difference I reverted this back.
+
+_--------------------------------------------------------------------------------
+I will rebuild the word before I send it into the recursion this should solve this vertical example
+
+ x _ _ _ _        the word is "p"
+ x _ _ t _
+ x x x p _
+ x _ _ b _
+ x x x x x
+ x _ _ _ _
+
+we start at p we get we check to see if p is a prefix it returns t and b for places to try the tile
+we go down the path of checking the bottom and place 'c' at the b spot
+
+ x _ _ _ _        the word is "pc"
+ x _ _ _ _
+ x x x p _
+ x _ _ c _
+ x x x x x
+ x _ _ _ _
+
+now we check to see if pc is a prefix. when the real prefix is actually "pcx" if pc is a prefix that we go down another sett of recursion
+if pcx is not a prefix we eliminate this potentially expensive recursion path. and all it cost was n+1 where n is the size of the word
+
+This seemed seemed promising but made it way worse!!! it took 113 seconds to run with only the verticle changed shit! maybe I can build on the world while I check
+for a bottom point.
+
+checking for the word every time through takes to long I will try a new version of get bottom open that build onto the word
+
+-------------------------------------------------------
+at first this made no difference and it was because i realized I was not changing anything to the string if you pass in a string it passes in a copy of it in java
+
+This worked better I shaved it down from 26 seconds to 22 seconds!!  this only build as I look at the bottom
+now lets see if I build as I go up the top as the same theory can happen in reverse I actually think it is the only correct problem solver anyways.
+
+_-----------------------------------------------------------------------------------------------------------------
+
+lets make the same exact changes to the horizontal word checker:
+
+currently we are at 22 seconds.
+
+!!!!!!!!!!!WE MADE IT DOWN TO 20 SECONDS!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+this is not really dramatically better but still 2 seconds is decent
+
+it could be the layout of the board that make it not as dramatic.

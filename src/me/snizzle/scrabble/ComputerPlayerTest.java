@@ -17,6 +17,18 @@ public class ComputerPlayerTest {
 
     public static void main(String args[]){
 
+        /*String test = "hello";
+        StringBuilder test2 = new StringBuilder(test);
+        long start = System.nanoTime();
+        changeS(test2);
+        //System.out.println(test + " --- "+ test2.toString());
+        // ending time
+        long end = System.nanoTime();
+        System.out.println("Find Best move takes " +  (end - start) + "ns");
+
+
+        System.out.println(test + " ---- " + test2.toString());*/
+
         BufferedReader fileReader = null;
         try {
             fileReader = new BufferedReader(new FileReader("resources/test1"));
@@ -39,5 +51,10 @@ public class ComputerPlayerTest {
         }
 
 
+    }
+
+    static public void changeS(StringBuilder s){
+        s.insert(0,"W");
+        //System.out.println(s);
     }
 }

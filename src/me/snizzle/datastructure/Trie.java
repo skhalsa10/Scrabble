@@ -38,7 +38,6 @@ public class Trie {
             }
             current = current.children[c];
         }
-        //TODO we could add the full string to the node if we want
         current.setIsWord(true);
 
     }
