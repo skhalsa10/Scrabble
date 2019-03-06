@@ -152,6 +152,7 @@ public class ScrabbleRules {
      *
      * this will check both the validity of where the tiles are placed and all words that are created  are real words
      *
+     *
      * @param currentMove to check
      * @param board the board to check the move against.
      * @return true or false accordingly.
@@ -251,7 +252,7 @@ public class ScrabbleRules {
         for (ScrabbleBoardPoint p:word) {
             //if the point references a word multiplier only add the value of the
             // tile add the point to wordMultipliers for later calculation
-            if(board.valueIsWordMultAt(p.getRow(),p.getCol())){
+            if(board.valueIsWordMultAt(p.getRow(),p.getCol()) && currentMove.containsKey(p)){
                 wordMultipliers.add(p);
                 //if the point references a tile on the board add the tile value
                 if(board.readTileAt(p.getRow(),p.getCol()) != null){
@@ -270,8 +271,7 @@ public class ScrabbleRules {
             //lets finish up this by assuming that it is not a word multiplier
             //if the tile is on the board add the points multiplied by the board value.
             if(board.readTileAt(p.getRow(),p.getCol())!= null){
-                total += board.readTileAt(p.getRow(),p.getCol()).getPoints() *
-                        board.getBoardValueAt(p.getRow(),p.getCol());
+                total += board.readTileAt(p.getRow(),p.getCol()).getPoints();
             }
             //if tile is not yet on the board it should be in the currentMove
             else if(currentMove.containsKey(p)){
@@ -357,6 +357,7 @@ public class ScrabbleRules {
     }
 
     /**
+     * TODO this is long prone to errors
      * this method will return a hash set of an ArrayList of scrabble points representing words created from the current move
      * @param currentMove the current move used to figure out moves from
      * @param board the board to check the current move against.

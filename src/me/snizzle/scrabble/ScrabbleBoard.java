@@ -116,6 +116,7 @@ public class ScrabbleBoard {
                     char letter = line.charAt((c*3)+1);
                     if(word == ' '){
                         boardTiles[r][c] = new ScrabbleTile(letter, rules.standardCharPoints(letter));
+                        boardValues[r][c] = 1;
                     }
                     else if (word != '.') {
                         boardValues[r][c] = Integer.parseInt(String.valueOf(word)) + 'w';
