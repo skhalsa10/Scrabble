@@ -26,7 +26,7 @@ public class ScrabbleHumanPlayer extends ScrabblePlayer{
         if(!approveMove()){
             return false;
         }
-        System.out.println("passed Approve Move");
+
 
         tileTray.fillTray();
         return true;

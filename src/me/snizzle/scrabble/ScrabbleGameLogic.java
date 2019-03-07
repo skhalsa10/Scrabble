@@ -46,7 +46,7 @@ public class ScrabbleGameLogic implements GameLogic {
      * @param exporter
      */
     public void export(Exporter exporter) {
-        //System.out.println(board.getListPlayedTiles().size());
+
         //I will update the exportS with the current tray and the new tiles played since last render
         exportS.exportUserTray(player.tileTrayToArray());
         exportS.setPlayedTiles(board.export());
@@ -65,13 +65,11 @@ public class ScrabbleGameLogic implements GameLogic {
     @Override
     public void step() {
         if (isPlayerTurn) {
-            //System.out.println(importer.timeToFetchData());
             //we need to fetch data  for the user turn if ready. if not skip step and come back.
             if (importer.timeToFetchData()) {
                 //System.out.println("processing");
                 ScrabbleImportState userMove = (ScrabbleImportState) importer.fetch();
                 player.cacheMove(userMove.getMove());
-                //printCachedMove(userMove.getMove());
                 player.setBlankPoints(userMove.getBlankPoints());
                 if (player.takeTurn()) {
                     isPlayerTurn = false;

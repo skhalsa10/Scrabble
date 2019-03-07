@@ -1,6 +1,5 @@
 package me.snizzle.scrabble;
 
-import me.snizzle.datastructure.Trie;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,29 +21,20 @@ public abstract class ScrabbleCompPlayer extends ScrabblePlayer {
 
     @Override
     public boolean takeTurn() {
-        //TODO may need to erase this later
-        this.blankPoints = new ArrayList<>();
-
 
         //find the best move computers version of getting a move instead of using gui
-        //bestMove = findBestMoveSlow();
         bestMove = new HashMap<>();
         bestMoveScore = 0;
 
 
         long start = System.currentTimeMillis();
         findBestMove();
-        // ending time
         long end = System.currentTimeMillis();
-        printMove(bestMove);
         System.out.println("Find Best move takes " +  (end - start) + "ms");
 
-        //printMove(bestMove);
-        System.out.println("SCORE: " + bestMoveScore);
 
         //cache the move like we do for the human player i know it works already
         cacheMove(bestMove);
-        System.out.println("computer in da house");
 
         //return false if it is a bad move. it is pretty much guarunteed to be valid as valid checks are conducted
         //in find best move
@@ -52,13 +42,13 @@ public abstract class ScrabbleCompPlayer extends ScrabblePlayer {
 
             return false;
         }
-        System.out.println("computer move passed the chace check");
+
         //commit the move to the board
         if(!approveMove()){
             return false;
         }
         score.addToScore(bestMoveScore);
-        System.out.println("computer move passed");
+
         tileTray.fillTray();
 
         return true;
@@ -207,7 +197,6 @@ public abstract class ScrabbleCompPlayer extends ScrabblePlayer {
                     continue;
                 }
 
-                //System.out.println(leftOpen);
                 top =  getMaxVMove(topOpen,(t.readTile()+tWord),copyMoveAndAdd(move,topOpen,t),copyTilesWithNoT(tiles,t)) || top;
                 bottom = getMaxVMove(bottomOpen,(bWord+t.readTile()),copyMoveAndAdd(move,bottomOpen,t),copyTilesWithNoT(tiles,t)) || bottom;
                 //if we get this far both sides are valid.
@@ -262,7 +251,7 @@ public abstract class ScrabbleCompPlayer extends ScrabblePlayer {
      */
     private ScrabbleBoardPoint getTopPoint(ScrabbleBoardPoint p) {
         if(board.readTileAt(p.getRow(),p.getCol()) == null){
-            //System.out.println("error this should not happen");
+
             return null;
         }
         //recursion endpoint where we reach the end of the board
@@ -352,7 +341,6 @@ public abstract class ScrabbleCompPlayer extends ScrabblePlayer {
         if(tiles.size() ==0){
             if(rules.dictContains(word)){
                 if(rules.isMoveValid(move,board)){
-                    //System.out.println("do I get here?");
                     int moveScore = rules.calcScore(move,board);
                     if(moveScore> bestMoveScore){
                         bestMoveScore = moveScore;
@@ -463,7 +451,6 @@ public abstract class ScrabbleCompPlayer extends ScrabblePlayer {
      */
     private ScrabbleBoardPoint getLeftPoint(ScrabbleBoardPoint p) {
         if(board.readTileAt(p.getRow(),p.getCol()) == null){
-            //System.out.println("error this should not happen");
             return null;
         }
         //recursion endpoint where we reach the end of the board

@@ -42,7 +42,7 @@ public class ScrabbleTileTray {
      * fills the tray back up to 7 or as many tiles are left in the tile bag
      */
     public void fillTray(){
-        System.out.println(tileBag);
+
         while(!tileBag.isEmpty() && tray.size() < 7 ){
             drawFromTileBag();
         }

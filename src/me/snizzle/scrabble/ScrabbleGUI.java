@@ -339,8 +339,7 @@ public class ScrabbleGUI implements ScrabbleGameLogic.Importer, ScrabbleGameLogi
             }
         });
         Optional<String> input = dialog.showAndWait();
-        System.out.println(textInput.getText());
-        //input.ifPresent(letter -> {c = letter.charAt(0);});
+
         return textInput.getText().charAt(0);
 
 

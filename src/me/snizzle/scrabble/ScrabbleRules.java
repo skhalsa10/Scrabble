@@ -195,6 +195,7 @@ public class ScrabbleRules {
         //System.out.println(currentDirection);
         //System.out.println("wordpoints size: " + wordPoints.size());
 
+
         //make sure all the words are actual words in the dictionary
         if(!wordsInDictionary(wordPoints, board, currentMove)){
             return false;
