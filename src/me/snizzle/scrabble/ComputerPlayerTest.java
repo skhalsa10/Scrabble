@@ -41,7 +41,7 @@ public class ComputerPlayerTest {
             String trayRep = fileReader.readLine();
             board.printBoard();
             //System.out.println(trayRep);
-            comp = new ScrabbleCompPlayer(board,tileBag,trayRep,rules);
+            comp = new ScrabbleCompPlayer20(board,tileBag,trayRep,rules);
             comp.takeTurn();
             board.printBoard();
         } catch (FileNotFoundException e) {

@@ -1,13 +1,16 @@
 package me.snizzle.scrabble;
 
+import me.snizzle.datastructure.Trie;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class ScrabbleCompPlayer extends ScrabblePlayer {
+public abstract class ScrabbleCompPlayer extends ScrabblePlayer {
 
-    public HashMap<ScrabbleBoardPoint, ScrabbleTile> bestMove = new HashMap<>();
-    public int bestMoveScore = 0;
+    protected HashMap<ScrabbleBoardPoint, ScrabbleTile> bestMove = new HashMap<>();
+    protected int bestMoveScore = 0;
+    //private Trie testedWords;
 
     public ScrabbleCompPlayer(ScrabbleBoard board, ScrabbleTileBag tileBag, ScrabbleRules rules) {
         super(board, tileBag, rules);
@@ -28,10 +31,12 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         bestMove = new HashMap<>();
         bestMoveScore = 0;
 
+
         long start = System.currentTimeMillis();
         findBestMove();
         // ending time
         long end = System.currentTimeMillis();
+        printMove(bestMove);
         System.out.println("Find Best move takes " +  (end - start) + "ms");
 
         //printMove(bestMove);
@@ -40,7 +45,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         //cache the move like we do for the human player i know it works already
         cacheMove(bestMove);
         System.out.println("computer in da house");
-        System.out.println(bestMove.size());
+
         //return false if it is a bad move. it is pretty much guarunteed to be valid as valid checks are conducted
         //in find best move
         if(!checkCachedMoveValid()){
@@ -63,32 +68,9 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
      * my other algorithm was horrible I am trying a new one from scratch I wasted so much time on the other one.
      * @return
      */
-    private void findBestMove() {
-        //i will get a list of points representing tiles on the board
-        ArrayList<ScrabbleBoardPoint> playedPoints = board.getListPlayedTiles();
+    abstract void findBestMove();
 
-
-        //HORIZONTAL CALCULATIONNS
-        //I will take this list and filter them to only include the points I should use to check for horizontal moves
-        HashSet<ScrabbleBoardPoint> hPointsToCheck = filterHPoints(playedPoints);
-
-        for (ScrabbleBoardPoint p:hPointsToCheck ) {
-            // TODO
-            getMaxHMove(p,getHWord(p,new HashMap<>()),new HashMap<>(),tileTray.getCopy());
-        }
-
-        //VERTICAL CALCULATIONS
-        HashSet<ScrabbleBoardPoint> vPointsToCheck = filterVPoints(playedPoints);
-        //HashSet<ScrabbleBoardPoint> vPointsToCheck = new HashSet<>();
-        //vPointsToCheck.add(new ScrabbleBoardPoint(6,10));
-        //printPoints(vPointsToCheck);
-        for (ScrabbleBoardPoint p:vPointsToCheck ) {
-            getMaxVMove(p,getVWord(p,new HashMap<>()),new HashMap<>(),tileTray.getCopy());
-        }
-
-    }
-
-    private String getHWord(ScrabbleBoardPoint p, HashMap<ScrabbleBoardPoint, ScrabbleTile> move) {
+    protected String getHWord(ScrabbleBoardPoint p, HashMap<ScrabbleBoardPoint, ScrabbleTile> move) {
         ScrabbleBoardPoint leftP = getLeftPoint(p);
         if(leftP==null){
             return "";
@@ -139,7 +121,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
         return s + getVWordHelper(new ScrabbleBoardPoint(p.getRow()+1,p.getCol()),move);
     }
 
-    private String getVWord(ScrabbleBoardPoint p, HashMap<ScrabbleBoardPoint, ScrabbleTile> move){
+    protected String getVWord(ScrabbleBoardPoint p, HashMap<ScrabbleBoardPoint, ScrabbleTile> move){
         ScrabbleBoardPoint topP = getTopPoint(p);
         if(topP == null){
             return "";
@@ -156,7 +138,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
     }
 
     //TODO I need to actually build up a word when I get the next open  what if the next open skips a tile
-    private boolean getMaxVMove(ScrabbleBoardPoint p, String word,
+    protected boolean getMaxVMove(ScrabbleBoardPoint p, String word,
                              HashMap<ScrabbleBoardPoint, ScrabbleTile> move,
                              ArrayList<ScrabbleTile> tiles){
 
@@ -188,6 +170,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
             StringBuilder bWordBuilder = new StringBuilder(word);
             bottomOpen = getBottomOpenP(p,move,bWordBuilder);
             String bWord = bWordBuilder.toString();
+
             //we do not want to was time adding tiles on the rightside if the current word is not a prefix of something
             if(!rules.dictIsPrefix(bWord)){
                 bottomOpen = null;
@@ -204,6 +187,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
 
             //NOW THAT WE HAVE OPENS we can loop through and reduce the recursion accordingly
             for (ScrabbleTile t:tiles ) {
+
                 //if both are null we cant add this tile anywhere so we reduce by the tile and
                 // continue when it comes back to try with the next tile
                 if(topOpen == null && bottomOpen == null){
@@ -232,6 +216,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
 
             while(!tiles.isEmpty()){
 
+
                 getMaxVMove(p,word,move,copyTilesWithNoT(tiles,tiles.get(0)));
                 tiles.remove(0);
             }
@@ -250,7 +235,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
      * @param playedPoints
      * @return
      */
-    private HashSet<ScrabbleBoardPoint> filterVPoints(ArrayList<ScrabbleBoardPoint> playedPoints) {
+    protected HashSet<ScrabbleBoardPoint> filterVPoints(ArrayList<ScrabbleBoardPoint> playedPoints) {
         HashSet<ScrabbleBoardPoint> set = new HashSet<>();
 
         for (ScrabbleBoardPoint p: playedPoints ) {
@@ -358,9 +343,9 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
      * @param tiles
      * @return
      */
-    private boolean getMaxHMove(ScrabbleBoardPoint p, String word,
-                                HashMap<ScrabbleBoardPoint, ScrabbleTile> move,
-                                ArrayList<ScrabbleTile> tiles) {
+    protected boolean getMaxHMove(ScrabbleBoardPoint p, String word,
+                                  HashMap<ScrabbleBoardPoint, ScrabbleTile> move,
+                                  ArrayList<ScrabbleTile> tiles) {
 
         //okay hopefull this is faster I think checking is my move is valid costs alot so I will build up a string instead
         //if the dictionary contains the word. it is worth checking to see if the move is valid. the chances are higher
@@ -449,7 +434,7 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
      * @param playedPoints
      * @return
      */
-    private HashSet<ScrabbleBoardPoint> filterHPoints(ArrayList<ScrabbleBoardPoint> playedPoints) {
+    protected HashSet<ScrabbleBoardPoint> filterHPoints(ArrayList<ScrabbleBoardPoint> playedPoints) {
 
         HashSet<ScrabbleBoardPoint> set = new HashSet<>();
 
@@ -564,15 +549,13 @@ public class ScrabbleCompPlayer extends ScrabblePlayer {
     }
 
 
-
-
     /**
      * this returns a copy of tiles with out Tile t
      * @param tiles makes a deep copy of these tiles
      * @param t removes this t from the copy returned
      * @return copy of tiles without T
      */
-    private ArrayList<ScrabbleTile> copyTilesWithNoT(ArrayList<ScrabbleTile> tiles, ScrabbleTile t) {
+    protected ArrayList<ScrabbleTile> copyTilesWithNoT(ArrayList<ScrabbleTile> tiles, ScrabbleTile t) {
         ArrayList<ScrabbleTile> temp = new ArrayList<>();
         for (ScrabbleTile tile: tiles) {
             temp.add(new ScrabbleTile(tile.readTile(),tile.getPoints()));

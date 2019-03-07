@@ -51,3 +51,36 @@ currently we are at 22 seconds.
 this is not really dramatically better but still 2 seconds is decent
 
 it could be the layout of the board that make it not as dramatic.
+
+-----------------------------------------------------------------------------
+I have another idea what about adding another TRie structure to keep track of words I already checked so I am not checking duplicates?
+this will work but doesnt work. what if two seperate spots can play the same word but one is worth more base dont he board configs...dangit
+
+Just to test anyways i did get this down to 19 seconds but the answer was not very good.I will scratch these changes
+----------------------------------------------------------------------------------------
+
+So finally got the blanks working but it really slows down the computer.
+
+testing on:
+
+15
+3. .. .. .2 .. .. .. 3. .. .. .. .2 .. .. 3.
+.. 2. .. .. .. .3 .. .. .. .3 .. .. .. 2. ..
+.. .. 2. .. .. .. .2 .. .2 .. .. .. 2. .. ..
+.2 .. .. 2. .. .. .. .2 .. .. .. 2. .. .. .2
+.. .. .. .. 2. .. .. .. .. .. 2. .. .. .. ..
+.. .3 .. .. .. .3 .. .. .. .3 .. .. .. .3 ..
+.. .. .2 .. .. .. .2 .. .2 .. .. .. .2 .. ..
+3. .. .. .2 ..  c  a  t .. .. .. .2 .. .. 3.
+.. .. .2 .. .. .. .2 .. .2 .. .. .. .2 .. ..
+.. .3 .. .. .. .3 .. .. .. .3 .. .. .. .3 ..
+.. .. .. .. 2. .. .. .. .. .. 2. .. .. .. ..
+.2 .. .. 2. .. .. .. .2 .. .. .. 2. .. .. .2
+.. .. 2. .. .. .. .2 .. .2 .. .. .. 2. .. ..
+.. 2. .. .. .. .3 .. .. .. .3 .. .. .. 2. ..
+3. .. .. .2 .. .. .. 3. .. .. .. .2 .. .. 3.
+dgos*ie
+
+and it takes freaking 93723ms!! that is with only cat being played. this is essentially unplayable if this were in a bigger
+board it would be taking about 5 minutes to make a turn. I dont have enough time to fix this I think I would have to rewrite
+most of my code.I will make two versions

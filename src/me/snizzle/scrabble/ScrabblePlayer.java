@@ -82,7 +82,7 @@ public abstract class ScrabblePlayer {
         return true;
     }
 
-    private ArrayList<ScrabbleTile> getCurrentMoveValuesWithBlanks() {
+    /*private ArrayList<ScrabbleTile> getCurrentMoveValuesWithBlanks() {
 
         ArrayList<ScrabbleTile> temp = new ArrayList<>();
         for (ScrabbleBoardPoint p:currentMove.keySet()) {
@@ -95,8 +95,22 @@ public abstract class ScrabblePlayer {
         }
 
         return temp;
-    }
+    }*/
 
+    private ArrayList<ScrabbleTile> getCurrentMoveValuesWithBlanks() {
+
+        ArrayList<ScrabbleTile> temp = new ArrayList<>();
+        for (ScrabbleBoardPoint p:currentMove.keySet()) {
+            if(currentMove.get(p).getPoints() ==0){
+                temp.add(new ScrabbleTile(' ', 0));
+            }
+            else{
+                temp.add(currentMove.get(p));
+            }
+        }
+
+        return temp;
+    }
     /**
      * this will assume the move is valid remove the tiles from the tray
      * and plays them on the board. It will also delete the reset currentMove to null.

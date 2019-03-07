@@ -30,12 +30,10 @@ public class ScrabbleGameLogic implements GameLogic {
         this.importer = importer;
         this.exportS = new ScrabbleExportState();
         this.tileBag = new ScrabbleTileBag();
-        //TODO should I really have the words here? probably needs to be tucked into the rules
-        //this.words = new ScrabbleWords("resources/enable.txt");
         this.rules = new ScrabbleRules();
         this.board = new ScrabbleBoard(rules);
         this.player = new ScrabbleHumanPlayer(board, tileBag, rules);
-        this.comp = new ScrabbleCompPlayer(board, tileBag, rules);
+        this.comp = new ScrabbleCompPlayer20(board, tileBag, rules);
 
         this.isGameOver = false;
         this.isPlayerTurn = true;

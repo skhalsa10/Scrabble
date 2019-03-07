@@ -64,7 +64,11 @@ public class ScrabbleTileTray {
         ScrabbleRules rules = new ScrabbleRules();
         //add the 7 character string to the tray. only used for testing
         for(int i = 0; i < 7; i++){
-            tray.add(new ScrabbleTile(trayString.charAt(i),rules.standardCharPoints(trayString.charAt(i))));
+            if(trayString.charAt(i) == '*'){
+                tray.add(new ScrabbleTile(' ',rules.standardCharPoints(trayString.charAt(i))));
+            }else {
+                tray.add(new ScrabbleTile(trayString.charAt(i), rules.standardCharPoints(trayString.charAt(i))));
+            }
         }
         rules = null;
     }
