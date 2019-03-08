@@ -32,18 +32,56 @@ ________
 ## Versions 
 Where are the .jar files?
 ### V1
-explain about how version 1 works
+ComputerPlayerTest Usage:
+
+java -jar Scrabble-Comp-Test-Skhalsa10.jar <path/to/file/dictionary/file.txt> <path/to/test/file.txt>
+or
+java -jar Scrabble-Comp-Test-Skhalsa10.jar <path/to/file/dictionary/file.txt> <path/to/test/file.txt> <computermode>
+computermode can be one of the following: 20, blank, or noblank
+
+example that runs the defualts: java -jar Scrabble-Comp-Test-Skhalsa10.jar ./resources/sowpods.txt ./resources/test.txt 20
+
+The default values require the resources folder full of files to be in the same directory
+where the jar file is. So if you copy the jar file somewhere you should also copy the resources folder
+
+PLEASE LOOK AT THE TEST FILE TO UNDERSTAND WHAT I AM EXPECTING TO READ IN THE GENERAL FORMAT IS:
+
+newline
+boardsize
+board representation
+tile tray representation
+
+make sure when you feed in the file it starts with a NEWLINE and does NOT end with one see test.txt for example
+
+I mention this again BE CAREFUL running the computer version that checks all the blanks. IT WILL TAKE TIME.
+
+*******there is a possibility for the test to crash on a case where tiles have been played on the edge********** 
+I dont have time to fix so hopefully it doesnt screw up any tests.
+
 ### V2
-explain about how version 2 works etc...
+######SCRABBLE GUI
+
+this program needs the resources folder to work so if you copy the Scrabble_GUI_skhalsa10.jar to a folder called "test", "test" should contain at least the following:
+
+test  
+ |_resources/  
+ |_Scrabble_GUI_skhalsa10.jar
+ 
+Unfortuantely I ran out of time and was never able to set up the GUI to take in a dictionary argument. I ran out of time and my gui design complicated things
+
+run the game as follows:
+
+java -jar Scrabble_GUI_skhalsa10.jar
 
 ## Docs
-What folder is your documentation (diagram and class diagram) in? TODO
+please find object document in the /Doc folder this should be included in all jars and on the git repository. It also includes a copy of the test.txt file that canbe used as a reference.
+
 
 ## Status
 ### Implemented Features
 - I have a pretty decent looking GUI with a nice color scheme. I probably spent to much time on this.
 - I have implemented a scoring calculator, but it is not finished see bugs below to see what is missing.
-- I have 3 computers. one will stop checking for moves after it found one with points greater than 18
+- I have 3 computers. one will stop checking for moves after it found one with points greater than 18 this is the computer the GUI uses.
 
 
 ### Known Issues
@@ -53,7 +91,7 @@ WOW where to start!
 2. the score does not calculate right when the game ends. I do not suptract tile values or anything like this
 3. In fact now that I think about ti the game probably does not handle the end of the game at all. I have never played a game long enough to finish it. I know I didnt code logic for it.
 4. you can not skip your turn. if the human player happens to get stuck with a turn where they cant make a move then this will be an endless loop and the game cannot move forward.
- 
+5. Found a bug in the gui (and probably in the computer test as well) where the computer program crashes whe a tile is playe don the edge and the computer looks for a move around this location. I dont have enough time to fix this unfortuantely sorry. 
 
 ## Testing and Debugging
 the computer player was tested with a file called "test.txt" you can find it in the /Docs directory.
