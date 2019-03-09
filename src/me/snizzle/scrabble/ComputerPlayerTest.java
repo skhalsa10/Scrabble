@@ -35,6 +35,8 @@ public class ComputerPlayerTest {
             return;
         }
 
+        //compS = "blank";
+
 
         BufferedReader fileReader = null;
         try {

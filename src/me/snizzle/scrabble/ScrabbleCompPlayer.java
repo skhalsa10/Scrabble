@@ -132,8 +132,25 @@ public abstract class ScrabbleCompPlayer extends ScrabblePlayer {
                              HashMap<ScrabbleBoardPoint, ScrabbleTile> move,
                              ArrayList<ScrabbleTile> tiles){
 
+        if(rules.dictContains(word)){
+            if(rules.isMoveValid(move,board)){
+                int moveScore = rules.calcScore(move,board);
+                if(moveScore> bestMoveScore){
+                    bestMoveScore = moveScore;
+                    bestMove = move;
+                    if(tiles.size()==0){
+                        return true;
+                    }
+                }
+            }
+        }
+
+        if(tiles.size()==0){
+            return false;
+        }
+
         //this is the closing case for the recurssion
-        if(tiles.size() == 0){
+        /*if(tiles.size() == 0){
             if(rules.dictContains(word)){
                 if(rules.isMoveValid(move,board)){
                     int moveScore = rules.calcScore(move,board);
@@ -148,7 +165,7 @@ public abstract class ScrabbleCompPlayer extends ScrabblePlayer {
             //if the dictionary does not contain the word... or if
             // it does but the move is not valid return false
             return false;
-        }
+        }*/
         else if(tiles.size()>0){
 
             //word = getVWord(p, move);
@@ -201,13 +218,6 @@ public abstract class ScrabbleCompPlayer extends ScrabblePlayer {
                 bottom = getMaxVMove(bottomOpen,(bWord+t.readTile()),copyMoveAndAdd(move,bottomOpen,t),copyTilesWithNoT(tiles,t)) || bottom;
                 //if we get this far both sides are valid.
 
-            }
-
-            while(!tiles.isEmpty()){
-
-
-                getMaxVMove(p,word,move,copyTilesWithNoT(tiles,tiles.get(0)));
-                tiles.remove(0);
             }
 
         }
@@ -336,9 +346,26 @@ public abstract class ScrabbleCompPlayer extends ScrabblePlayer {
                                   HashMap<ScrabbleBoardPoint, ScrabbleTile> move,
                                   ArrayList<ScrabbleTile> tiles) {
 
+        if(rules.dictContains(word)){
+            if(rules.isMoveValid(move,board)){
+                int moveScore = rules.calcScore(move,board);
+                if(moveScore> bestMoveScore){
+                    bestMoveScore = moveScore;
+                    bestMove = move;
+                    if(tiles.size()==0){
+                        return true;
+                    }
+                }
+            }
+        }
+
+        if(tiles.size()==0){
+            return false;
+        }
+
         //okay hopefull this is faster I think checking is my move is valid costs alot so I will build up a string instead
         //if the dictionary contains the word. it is worth checking to see if the move is valid. the chances are higher
-        if(tiles.size() ==0){
+       /* if(tiles.size() ==0){
             if(rules.dictContains(word)){
                 if(rules.isMoveValid(move,board)){
                     int moveScore = rules.calcScore(move,board);
@@ -352,7 +379,8 @@ public abstract class ScrabbleCompPlayer extends ScrabblePlayer {
             //if the dictionary does not contain the word... or if
             // it does but the move is not valid return false
             return false;
-        }
+        }*/
+
         else if(tiles.size()>0){
 
             //find the open points
@@ -404,11 +432,6 @@ public abstract class ScrabbleCompPlayer extends ScrabblePlayer {
 
             }
 
-            while(!tiles.isEmpty()){
-
-                getMaxHMove(p,word,move,copyTilesWithNoT(tiles,tiles.get(0)));
-                tiles.remove(0);
-            }
         }
         else{
             System.out.println("we should never print this!!!!");
